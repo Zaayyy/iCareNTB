@@ -1,0 +1,86 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 140" fill="none">
+  <defs>
+    <!-- Gradients -->
+    <linearGradient id="emeraldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#047857"/>
+      <stop offset="60%" stop-color="#059669"/>
+      <stop offset="100%" stop-color="#10b981"/>
+    </linearGradient>
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#b45309"/>
+      <stop offset="50%" stop-color="#f59e0b"/>
+      <stop offset="100%" stop-color="#fcd34d"/>
+    </linearGradient>
+    <linearGradient id="shieldBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#064e3b"/>
+      <stop offset="100%" stop-color="#022c22"/>
+    </linearGradient>
+    <filter id="softGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#047857" flood-opacity="0.35"/>
+    </filter>
+  </defs>
+
+  <!-- Logo Icon Container (Rounded Shield / Emblem) -->
+  <g transform="translate(10, 10)">
+    <!-- Outer Glow & Shield -->
+    <rect x="0" y="0" width="120" height="120" rx="32" fill="url(#shieldBg)" filter="url(#softGlow)"/>
+    <rect x="2" y="2" width="116" height="116" rx="30" stroke="url(#goldGrad)" stroke-width="2" stroke-opacity="0.6"/>
+
+    <!-- Concentric Certification Rings -->
+    <circle cx="60" cy="60" r="48" stroke="url(#emeraldGrad)" stroke-width="1.5" stroke-dasharray="4 2" opacity="0.7"/>
+
+    <!-- Padi & Daun Benih Kiri Kanan -->
+    <!-- Left Leaf / Paddy branch -->
+    <path d="M42 85 C32 72 32 55 42 42 C45 52 44 68 46 76" fill="url(#goldGrad)" opacity="0.9"/>
+    <path d="M35 68 C27 60 28 50 36 46 C37 54 36 62 38 66" fill="url(#goldGrad)" opacity="0.85"/>
+    <path d="M38 52 C32 45 35 38 42 36 C42 42 41 48 40 50" fill="url(#goldGrad)" opacity="0.8"/>
+
+    <!-- Right Leaf / Paddy branch -->
+    <path d="M78 85 C88 72 88 55 78 42 C75 52 76 68 74 76" fill="url(#emeraldGrad)"/>
+    <path d="M85 68 C93 60 92 50 84 46 C83 54 84 62 82 66" fill="url(#emeraldGrad)" opacity="0.9"/>
+    <path d="M82 52 C88 45 85 38 78 36 C78 42 79 48 80 50" fill="url(#emeraldGrad)" opacity="0.8"/>
+
+    <!-- Central Icon: Modern Tugu Jogja Siluet & Bintang Standar Mutu -->
+    <!-- Star at Top of Tugu -->
+    <polygon points="60,25 62,31 68,31 63,35 65,41 60,37 55,41 57,35 52,31 58,31" fill="url(#goldGrad)"/>
+    <!-- Tugu Peak (Golong) -->
+    <circle cx="60" cy="46" r="4.5" fill="url(#goldGrad)"/>
+    <!-- Tugu Shaft (Gilig) -->
+    <path d="M57 52 L63 52 L64 74 L56 74 Z" fill="#ffffff" opacity="0.95"/>
+    <!-- Tugu Base Plinth -->
+    <path d="M52 74 L68 74 L70 80 L50 80 Z" fill="url(#goldGrad)"/>
+    <path d="M47 80 L73 80 L75 85 L45 85 Z" fill="#ffffff" opacity="0.9"/>
+
+    <!-- Tunas Daun Pertanian di Bawah Tugu -->
+    <path d="M60 82 C55 76 49 76 46 80 C52 83 57 85 60 88 C63 85 68 83 74 80 C71 76 65 76 60 82 Z" fill="url(#emeraldGrad)"/>
+
+    <!-- Gold Badge "DIY" at bottom -->
+    <rect x="42" y="94" width="36" height="15" rx="7.5" fill="url(#goldGrad)"/>
+    <text x="60" y="105" font-family="system-ui, -apple-system, sans-serif" font-size="8.5" font-weight="900" fill="#064e3b" text-anchor="middle" letter-spacing="1">DIY</text>
+  </g>
+
+  <!-- Typography Text BRMP DIY -->
+  <g transform="translate(145, 26)">
+    <!-- Department Tagline -->
+    <text x="0" y="20" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="800" fill="#10b981" letter-spacing="2.5" text-transform="uppercase">
+      BALAI STANDARISASI &amp; MUTU PAKAN
+    </text>
+
+    <!-- Main Title: BRMP D.I. YOGYAKARTA -->
+    <text x="0" y="58" font-family="system-ui, -apple-system, sans-serif" font-size="34" font-weight="900" fill="#ffffff" letter-spacing="-0.5">
+      BRMP <tspan fill="#fbbf24">DIY</tspan>
+    </text>
+
+    <!-- Subtitle: Rumah Produksi & Sertifikasi Benih Unggul -->
+    <text x="0" y="80" font-family="system-ui, -apple-system, sans-serif" font-size="13" font-weight="600" fill="#93c5fd" opacity="0.95" letter-spacing="0.2">
+      <tspan fill="#e2e8f0">Rumah Produksi</tspan> &bull; <tspan fill="#a7f3d0">Bahan Baku &bull; Produk &bull; Stok Perbenihan</tspan>
+    </text>
+
+    <!-- Quality Accreditation Indicator Pill -->
+    <g transform="translate(300, 36)">
+      <rect x="0" y="0" width="65" height="22" rx="11" fill="rgba(255,255,255,0.12)" stroke="rgba(251,191,36,0.5)" stroke-width="1"/>
+      <text x="32.5" y="15" font-family="system-ui, -apple-system, sans-serif" font-size="9.5" font-weight="800" fill="#fbbf24" text-anchor="middle" letter-spacing="1">SNI ISO</text>
+    </g>
+  </g>
+</svg>
+

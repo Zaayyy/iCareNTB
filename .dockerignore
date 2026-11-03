@@ -1,0 +1,7 @@
+.git
+.gitignore
+.dockerignore
+*.log
+scratch/
+README.md
+

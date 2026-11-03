@@ -1,0 +1,23 @@
+# Rumah Produksi BRMP DIY - Production Apache Configuration
+
+# Disable Directory Listing
+Options -Indexes
+
+# Protect sensitive files
+<FilesMatch "(pakan\.db|\.db|\.sqlite|\.sqlite3|\.env|\.git|README\.md|Dockerfile|docker-compose\.yml)">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Deny from all
+    </IfModule>
+</FilesMatch>
+
+# Enable UTF-8 encoding
+AddDefaultCharset UTF-8
+
+# Compression (Gzip)
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css text/javascript application/javascript application/json
+</IfModule>
+

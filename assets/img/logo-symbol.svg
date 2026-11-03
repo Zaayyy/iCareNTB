@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" fill="none">
+  <defs>
+    <linearGradient id="shieldBg2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#064e3b"/>
+      <stop offset="100%" stop-color="#022c22"/>
+    </linearGradient>
+    <linearGradient id="goldGrad2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#b45309"/>
+      <stop offset="50%" stop-color="#f59e0b"/>
+      <stop offset="100%" stop-color="#fcd34d"/>
+    </linearGradient>
+    <linearGradient id="emeraldGrad2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#047857"/>
+      <stop offset="60%" stop-color="#059669"/>
+      <stop offset="100%" stop-color="#10b981"/>
+    </linearGradient>
+  </defs>
+
+  <rect x="0" y="0" width="120" height="120" rx="32" fill="url(#shieldBg2)"/>
+  <rect x="2" y="2" width="116" height="116" rx="30" stroke="url(#goldGrad2)" stroke-width="2" stroke-opacity="0.7"/>
+
+  <!-- Rings -->
+  <circle cx="60" cy="60" r="48" stroke="url(#emeraldGrad2)" stroke-width="1.5" stroke-dasharray="4 2" opacity="0.7"/>
+
+  <!-- Leaves & Paddy -->
+  <path d="M42 85 C32 72 32 55 42 42 C45 52 44 68 46 76" fill="url(#goldGrad2)" opacity="0.9"/>
+  <path d="M78 85 C88 72 88 55 78 42 C75 52 76 68 74 76" fill="url(#emeraldGrad2)"/>
+
+  <!-- Tugu Jogja + Star -->
+  <polygon points="60,24 62,30 68,30 63,34 65,40 60,36 55,40 57,34 52,30 58,30" fill="url(#goldGrad2)"/>
+  <circle cx="60" cy="45" r="4.5" fill="url(#goldGrad2)"/>
+  <path d="M57 51 L63 51 L64 73 L56 73 Z" fill="#ffffff" opacity="0.95"/>
+  <path d="M52 73 L68 73 L70 79 L50 79 Z" fill="url(#goldGrad2)"/>
+  <path d="M47 79 L73 79 L75 84 L45 84 Z" fill="#ffffff" opacity="0.9"/>
+
+  <!-- Badge DIY -->
+  <rect x="42" y="93" width="36" height="15" rx="7.5" fill="url(#goldGrad2)"/>
+  <text x="60" y="104" font-family="system-ui, -apple-system, sans-serif" font-size="8.5" font-weight="900" fill="#064e3b" text-anchor="middle" letter-spacing="1">DIY</text>
+</svg>
+

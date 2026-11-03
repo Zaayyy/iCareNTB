@@ -1,0 +1,12 @@
+version: '3.8'
+
+services:
+  rumah-produksi:
+    build: .
+    container_name: rumah_produksi_brmp
+    ports:
+      - "8080:80"
+    volumes:
+      - ./data:/var/www/html/data
+    restart: unless-stopped
+
