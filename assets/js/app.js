@@ -640,11 +640,212 @@ function refreshData() {
     }, 500);
 }
 
-// Quick modal open with prefilled type
-function openAddModalWithType(type) {
-    const typeSelect = document.getElementById('add-type-select');
-    if (typeSelect) typeSelect.value = type;
+// Quick modal open with prefilled type & slide multi-step
+let rawMaterialsCache = (typeof initialRawMaterials !== 'undefined' && Array.isArray(initialRawMaterials))
+    ? initialRawMaterials
+    : [];
+
+function openAddModalWithType(type = 'produk') {
+    const form = document.getElementById('form-add-item');
+    if (form) form.reset();
+
+    document.getElementById('add-type').value = type;
+    document.getElementById('add-image-preview-container')?.classList.add('hidden');
+    document.getElementById('add-image-preview')?.removeAttribute('src');
+
+    const modalTitle = document.getElementById('add-modal-title');
+    const modalSubtitle = document.getElementById('add-modal-subtitle');
+    const modalIconContainer = document.getElementById('add-modal-icon-container');
+    const labelNameType = document.getElementById('label-name-type');
+    const stepperBar = document.getElementById('add-stepper-bar');
+    const btnNextSlide = document.getElementById('btn-next-slide');
+    const btnSubmitSingle = document.getElementById('btn-submit-single');
+    const deductContainer = document.getElementById('deduct-rows-container');
+
+    if (deductContainer) deductContainer.innerHTML = '';
+    const emptyNotice = document.getElementById('empty-deduct-notice');
+    if (emptyNotice) emptyNotice.classList.remove('hidden');
+
+    goToSlide1();
+
+    if (type === 'produk') {
+        if (modalTitle) modalTitle.textContent = 'Tambah Pakan Jadi Baru';
+        if (modalSubtitle) modalSubtitle.textContent = 'Langkah 1 dari 2: Informasi Pakan';
+        if (modalIconContainer) modalIconContainer.textContent = '📦';
+        if (labelNameType) labelNameType.textContent = 'Pakan Jadi';
+        if (stepperBar) stepperBar.classList.remove('hidden');
+        if (btnNextSlide) btnNextSlide.classList.remove('hidden');
+        if (btnSubmitSingle) btnSubmitSingle.classList.add('hidden');
+    } else {
+        if (modalTitle) modalTitle.textContent = 'Tambah Bahan Baku Baru';
+        if (modalSubtitle) modalSubtitle.textContent = 'Input stok bahan baku gudang';
+        if (modalIconContainer) modalIconContainer.textContent = '🌾';
+        if (labelNameType) labelNameType.textContent = 'Bahan Baku';
+        if (stepperBar) stepperBar.classList.add('hidden');
+        if (btnNextSlide) btnNextSlide.classList.add('hidden');
+        if (btnSubmitSingle) btnSubmitSingle.classList.remove('hidden');
+    }
+
     openModal('modal-add-item');
+}
+
+function goToSlide1() {
+    const s1 = document.getElementById('add-slide-1');
+    const s2 = document.getElementById('add-slide-2');
+    if (s1) s1.classList.remove('hidden');
+    if (s2) s2.classList.add('hidden');
+
+    const dot1 = document.getElementById('step-dot-1');
+    const dot2 = document.getElementById('step-dot-2');
+    const txt1 = document.getElementById('step-text-1');
+    const txt2 = document.getElementById('step-text-2');
+    const subtitle = document.getElementById('add-modal-subtitle');
+
+    if (dot1) dot1.className = 'w-6 h-6 rounded-full bg-emerald-600 text-white font-bold text-xs flex items-center justify-center shadow-xs';
+    if (txt1) txt1.className = 'text-xs font-bold text-emerald-800';
+    if (dot2) dot2.className = 'w-6 h-6 rounded-full bg-slate-200 text-slate-500 font-bold text-xs flex items-center justify-center';
+    if (txt2) txt2.className = 'text-xs font-semibold text-slate-400';
+    if (subtitle) subtitle.textContent = 'Langkah 1 dari 2: Informasi Pakan';
+}
+
+function goToSlide2() {
+    const nameInput = document.getElementById('add-name');
+    const stockInput = document.getElementById('add-stock');
+
+    if (!nameInput || !nameInput.value.trim()) {
+        showToast('Silakan isi Nama Pakan Jadi terlebih dahulu.', 'error');
+        nameInput?.focus();
+        return;
+    }
+
+    if (!stockInput || !stockInput.value || parseFloat(stockInput.value) <= 0) {
+        showToast('Silakan isi Jumlah Berat dengan benar (> 0 kg).', 'error');
+        stockInput?.focus();
+        return;
+    }
+
+    const s1 = document.getElementById('add-slide-1');
+    const s2 = document.getElementById('add-slide-2');
+    if (s1) s1.classList.add('hidden');
+    if (s2) s2.classList.remove('hidden');
+
+    const summaryName = document.getElementById('summary-feed-name');
+    if (summaryName) summaryName.textContent = nameInput.value.trim();
+
+    const dot1 = document.getElementById('step-dot-1');
+    const dot2 = document.getElementById('step-dot-2');
+    const txt1 = document.getElementById('step-text-1');
+    const txt2 = document.getElementById('step-text-2');
+    const subtitle = document.getElementById('add-modal-subtitle');
+
+    if (dot1) dot1.className = 'w-6 h-6 rounded-full bg-emerald-100 text-emerald-800 font-bold text-xs flex items-center justify-center';
+    if (txt1) txt1.className = 'text-xs font-medium text-slate-500';
+    if (dot2) dot2.className = 'w-6 h-6 rounded-full bg-emerald-600 text-white font-bold text-xs flex items-center justify-center shadow-xs';
+    if (txt2) txt2.className = 'text-xs font-bold text-emerald-800';
+    if (subtitle) subtitle.textContent = 'Langkah 2 dari 2: Pengurangan Bahan Baku (Fleksibel)';
+}
+
+function addDeductRow() {
+    const container = document.getElementById('deduct-rows-container');
+    const emptyNotice = document.getElementById('empty-deduct-notice');
+    if (!container) return;
+
+    if (emptyNotice) emptyNotice.classList.add('hidden');
+
+    const row = document.createElement('div');
+    row.className = 'deduct-row bg-slate-50/90 p-2.5 rounded-2xl border border-slate-200 flex items-center gap-2 transition-all';
+
+    let optionsHtml = '<option value="">-- Pilih Bahan Baku --</option>';
+    if (Array.isArray(rawMaterialsCache)) {
+        rawMaterialsCache.forEach(m => {
+            optionsHtml += `<option value="${m.id}" data-stock="${m.stock}" data-unit="${m.unit}">🌾 ${escapeHtml(m.name)} (Stok: ${Number(m.stock).toLocaleString('id-ID')} ${m.unit})</option>`;
+        });
+    }
+
+    row.innerHTML = `
+        <div class="flex-1">
+            <select name="deduct_material_id[]" required onchange="handleDeductSelect(this)" 
+                    class="w-full text-xs font-bold bg-white border border-slate-300 rounded-xl px-2.5 py-2 focus:ring-2 focus:ring-emerald-500">
+                ${optionsHtml}
+            </select>
+        </div>
+        <div class="w-32 relative">
+            <input type="number" step="0.1" min="0.1" name="deduct_quantity[]" required placeholder="0" 
+                   class="w-full text-xs font-black pl-3 pr-9 py-2 bg-white border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500 text-slate-900">
+            <span class="deduct-unit-badge absolute right-2.5 top-2 text-[10px] font-bold text-slate-400 uppercase">kg</span>
+        </div>
+        <button type="button" onclick="removeDeductRow(this)" class="p-2 text-rose-500 hover:text-rose-700 hover:bg-rose-50 rounded-xl transition-smooth" title="Hapus Baris">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+    `;
+
+    container.appendChild(row);
+}
+
+function removeDeductRow(btn) {
+    const row = btn.closest('.deduct-row');
+    if (row) row.remove();
+
+    const container = document.getElementById('deduct-rows-container');
+    const emptyNotice = document.getElementById('empty-deduct-notice');
+    if (container && container.children.length === 0 && emptyNotice) {
+        emptyNotice.classList.remove('hidden');
+    }
+}
+
+function handleDeductSelect(selectEl) {
+    const opt = selectEl.options[selectEl.selectedIndex];
+    const unit = opt ? opt.getAttribute('data-unit') : 'kg';
+    const row = selectEl.closest('.deduct-row');
+    if (row) {
+        const badge = row.querySelector('.deduct-unit-badge');
+        if (badge) badge.textContent = unit || 'kg';
+    }
+}
+
+function previewAddImage(input) {
+    const container = document.getElementById('add-image-preview-container');
+    const preview = document.getElementById('add-image-preview');
+    if (!container || !preview) return;
+
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            preview.src = e.target.result;
+            container.classList.remove('hidden');
+        };
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+
+function previewAddImageUrl(url) {
+    const container = document.getElementById('add-image-preview-container');
+    const preview = document.getElementById('add-image-preview');
+    if (!container || !preview) return;
+
+    if (url && url.trim().startsWith('http')) {
+        preview.src = url.trim();
+        container.classList.remove('hidden');
+    }
+}
+
+function previewEditImage(input) {
+    const preview = document.getElementById('edit-image-preview');
+    if (!preview) return;
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            preview.src = e.target.result;
+        };
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+
+function previewEditImageUrl(url) {
+    const preview = document.getElementById('edit-image-preview');
+    if (preview && url && url.trim().startsWith('http')) {
+        preview.src = url.trim();
+    }
 }
 
 // ========================================================
@@ -1356,28 +1557,27 @@ async function showDistributionResultMap(data, item) {
 
 let availableRawMaterials = [];
 
-// Buka Modal Edit Item
+// Buka Modal Edit Item (Sederhana: Nama, Berat, Foto)
 function openEditModal(item) {
     if (!item) return;
 
-    document.getElementById('edit-id').value = item.id;
-    document.getElementById('edit-name').value = item.name || '';
-    document.getElementById('edit-code').value = item.code || '';
-    document.getElementById('edit-category').value = item.category || '';
-    document.getElementById('edit-unit').value = item.unit || 'kg';
-    document.getElementById('edit-stock-current').value = item.stock_current || 0;
-    document.getElementById('edit-stock-minimum').value = item.stock_minimum || 0;
-    document.getElementById('edit-price').value = item.price_per_unit || 0;
-    document.getElementById('edit-location').value = item.storage_location || '';
-    document.getElementById('edit-image').value = item.image_url || '';
-    document.getElementById('edit-desc').value = item.description || '';
+    const idEl = document.getElementById('edit-id');
+    const typeEl = document.getElementById('edit-type');
+    const nameEl = document.getElementById('edit-name');
+    const stockEl = document.getElementById('edit-stock-current');
+    const unitLabel = document.getElementById('edit-unit-label');
+    const imgUrlEl = document.getElementById('edit-image');
+    const imgPreview = document.getElementById('edit-image-preview');
+    const fileInput = document.getElementById('edit-image-file');
 
-    document.getElementById('edit-spec1-label').value = item.spec_1_label || '';
-    document.getElementById('edit-spec1-val').value = item.spec_1_value || '';
-    document.getElementById('edit-spec2-label').value = item.spec_2_label || '';
-    document.getElementById('edit-spec2-val').value = item.spec_2_value || '';
-    document.getElementById('edit-spec3-label').value = item.spec_3_label || '';
-    document.getElementById('edit-spec3-val').value = item.spec_3_value || '';
+    if (idEl) idEl.value = item.id;
+    if (typeEl) typeEl.value = item.type || 'produk';
+    if (nameEl) nameEl.value = item.name || '';
+    if (stockEl) stockEl.value = item.stock_current || 0;
+    if (unitLabel) unitLabel.textContent = item.unit || 'kg';
+    if (imgUrlEl) imgUrlEl.value = item.image_url || '';
+    if (imgPreview) imgPreview.src = item.image_url || 'https://images.unsplash.com/photo-1586201375761-83865001e31c?w=500&auto=format&fit=crop&q=80';
+    if (fileInput) fileInput.value = '';
 
     openModal('modal-edit-item');
 }

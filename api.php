@@ -104,82 +104,185 @@ try {
             break;
 
         case 'add_item':
-            $type = trim($_POST['type'] ?? 'bahan_baku');
-            $code = trim($_POST['code'] ?? '');
+            $pdo->beginTransaction();
+
+            $type = trim($_POST['type'] ?? 'produk');
+            if (!in_array($type, ['produk', 'bahan_baku'])) {
+                $type = 'produk';
+            }
+
             $name = trim($_POST['name'] ?? '');
-            $category = trim($_POST['category'] ?? '');
-            $targetStage = trim($_POST['target_stage'] ?? '');
-            $unit = trim($_POST['unit'] ?? 'kg');
             $stockCurrent = (float)($_POST['stock_current'] ?? 0);
-            $stockMinimum = (float)($_POST['stock_minimum'] ?? 10);
-            $location = trim($_POST['storage_location'] ?? 'Gudang Utama BRMP DIY');
-            $price = (int)($_POST['price_per_unit'] ?? 0);
-            $imageUrl = trim($_POST['image_url'] ?? '');
-            $description = trim($_POST['description'] ?? '');
 
-            $spec1Label = trim($_POST['spec_1_label'] ?? '');
-            $spec1Value = trim($_POST['spec_1_value'] ?? '');
-            $spec2Label = trim($_POST['spec_2_label'] ?? '');
-            $spec2Value = trim($_POST['spec_2_value'] ?? '');
-            $spec3Label = trim($_POST['spec_3_label'] ?? '');
-            $spec3Value = trim($_POST['spec_3_value'] ?? '');
-
-            if (empty($code) || empty($name) || empty($category)) {
-                echo json_encode(['success' => false, 'message' => 'Kode, Nama, dan Kategori wajib diisi!']);
+            if (empty($name)) {
+                echo json_encode(['success' => false, 'message' => 'Nama item wajib diisi!']);
                 exit;
             }
 
-            // Check duplicate code
-            $chk = $pdo->prepare("SELECT id FROM inventory_items WHERE code = :code");
-            $chk->execute([':code' => $code]);
-            if ($chk->fetch()) {
-                echo json_encode(['success' => false, 'message' => 'Kode barang sudah digunakan!']);
+            if ($stockCurrent <= 0) {
+                echo json_encode(['success' => false, 'message' => 'Jumlah berat harus lebih dari 0!']);
                 exit;
             }
 
-            if (empty($imageUrl)) {
-                if ($type === 'bahan_baku') {
-                    $imageUrl = 'https://images.unsplash.com/photo-1551754655-cd27e38d2076?w=500&auto=format&fit=crop&q=80';
-                } elseif ($type === 'produk') {
-                    $imageUrl = 'https://images.unsplash.com/photo-1586201375761-83865001e31c?w=500&auto=format&fit=crop&q=80';
-                } else {
-                    $imageUrl = 'https://images.unsplash.com/photo-1586201375761-83865001e31c?w=500&auto=format&fit=crop&q=80';
+            // Handle Foto: Upload file atau URL
+            $imageUrl = '';
+            if (!empty($_FILES['image_file']['name']) && $_FILES['image_file']['error'] === UPLOAD_ERR_OK) {
+                $allowedExts = ['jpg', 'jpeg', 'png', 'webp', 'gif'];
+                $ext = strtolower(pathinfo($_FILES['image_file']['name'], PATHINFO_EXTENSION));
+                if (in_array($ext, $allowedExts)) {
+                    $uploadsDir = __DIR__ . '/uploads';
+                    if (!is_dir($uploadsDir)) {
+                        mkdir($uploadsDir, 0777, true);
+                    }
+                    $filename = 'item_' . time() . '_' . bin2hex(random_bytes(3)) . '.' . $ext;
+                    if (move_uploaded_file($_FILES['image_file']['tmp_name'], $uploadsDir . '/' . $filename)) {
+                        $imageUrl = 'uploads/' . $filename;
+                    }
                 }
             }
 
+            if (empty($imageUrl)) {
+                $imageUrl = trim($_POST['image_url'] ?? '');
+            }
+
+            if (empty($imageUrl)) {
+                $imageUrl = ($type === 'bahan_baku')
+                    ? 'https://images.unsplash.com/photo-1551754655-cd27e38d2076?w=500&auto=format&fit=crop&q=80'
+                    : 'https://images.unsplash.com/photo-1586201375761-83865001e31c?w=500&auto=format&fit=crop&q=80';
+            }
+
+            // Generate Kode Barang Otomatis jika tidak ada
+            $codePrefix = ($type === 'produk') ? 'PRD' : 'BB';
+            $cleanName = strtoupper(preg_replace('/[^a-zA-Z]/', '', $name));
+            $subName = substr($cleanName, 0, 3);
+            if (strlen($subName) < 3) $subName = 'ITM';
+
+            $uniqueCode = '';
+            for ($attempt = 0; $attempt < 10; $attempt++) {
+                $testCode = $codePrefix . '-' . $subName . '-' . rand(10, 99);
+                $chk = $pdo->prepare("SELECT id FROM inventory_items WHERE code = :code");
+                $chk->execute([':code' => $testCode]);
+                if (!$chk->fetch()) {
+                    $uniqueCode = $testCode;
+                    break;
+                }
+            }
+            if (empty($uniqueCode)) {
+                $uniqueCode = $codePrefix . '-' . time();
+            }
+
+            $category = ($type === 'produk') ? 'Pakan Jadi Olahan' : 'Bahan Baku';
+            $unit = 'kg';
+            $stockMinimum = 10;
+            $location = 'Gudang Utama BRMP DIY';
+            $price = 0;
+
+            // Simpan Item Baru
             $insert = $pdo->prepare("
                 INSERT INTO inventory_items (
                     type, code, name, category, target_stage, unit, stock_current, stock_minimum,
                     storage_location, price_per_unit, image_url, spec_1_label, spec_1_value,
                     spec_2_label, spec_2_value, spec_3_label, spec_3_value, description
                 ) VALUES (
-                    :type, :code, :name, :category, :target_stage, :unit, :stock_current, :stock_minimum,
-                    :storage_location, :price_per_unit, :image_url, :spec_1_label, :spec_1_value,
-                    :spec_2_label, :spec_2_value, :spec_3_label, :spec_3_value, :description
+                    :type, :code, :name, :category, '-', :unit, :stock_current, :stock_minimum,
+                    :storage_location, :price_per_unit, :image_url, 'Protein Kasar', 'Standar SNI',
+                    'Kadar Air', '< 12%', 'Status Mutu', 'Teruji BRMP', 'Pencatatan komoditas mandiri sistem Rumah Produksi BRMP DIY'
                 )
             ");
             $insert->execute([
                 ':type' => $type,
-                ':code' => $code,
+                ':code' => $uniqueCode,
                 ':name' => $name,
                 ':category' => $category,
-                ':target_stage' => $targetStage,
                 ':unit' => $unit,
                 ':stock_current' => $stockCurrent,
                 ':stock_minimum' => $stockMinimum,
                 ':storage_location' => $location,
                 ':price_per_unit' => $price,
-                ':image_url' => $imageUrl,
-                ':spec_1_label' => $spec1Label,
-                ':spec_1_value' => $spec1Value,
-                ':spec_2_label' => $spec2Label,
-                ':spec_2_value' => $spec2Value,
-                ':spec_3_label' => $spec3Label,
-                ':spec_3_value' => $spec3Value,
-                ':description' => $description
+                ':image_url' => $imageUrl
             ]);
 
-            echo json_encode(['success' => true, 'message' => 'Data berhasil ditambahkan ke inventaris BRMP DIY!']);
+            $newItemId = (int)$pdo->lastInsertId();
+
+            // Catat Mutasi Masuk (IN) untuk item baru ini
+            $insMutation = $pdo->prepare("
+                INSERT INTO inventory_mutations (
+                    item_id, type, quantity, mutation_date, officer_name, destination_or_source, notes
+                ) VALUES (
+                    :item_id, 'IN', :quantity, :mutation_date, :officer_name, :dest, :notes
+                )
+            ");
+            $insMutation->execute([
+                ':item_id' => $newItemId,
+                ':quantity' => $stockCurrent,
+                ':mutation_date' => date('Y-m-d'),
+                ':officer_name' => $_SESSION['admin_user'] ?? 'Petugas Gudang BRMP DIY',
+                ':dest' => 'Pencatatan Komoditas Baru',
+                ':notes' => "Penambahan awal {$name} sebanyak {$stockCurrent} {$unit}"
+            ]);
+
+            // Pengurangan Stok Bahan Baku (Fleksibel untuk Pakan Jadi)
+            $deductedCount = 0;
+            $deductedDetails = [];
+
+            if ($type === 'produk' && !empty($_POST['deduct_material_id']) && is_array($_POST['deduct_material_id'])) {
+                $updBB = $pdo->prepare("UPDATE inventory_items SET stock_current = MAX(0, stock_current - :qty), updated_at = CURRENT_TIMESTAMP WHERE id = :id");
+                $insRec = $pdo->prepare("INSERT INTO product_recipes (product_id, raw_material_id, amount_per_unit) VALUES (:product_id, :raw_material_id, :amount_per_unit)");
+
+                foreach ($_POST['deduct_material_id'] as $idx => $rawMatId) {
+                    $rawMatId = (int)$rawMatId;
+                    $deductQty = (float)($_POST['deduct_quantity'][$idx] ?? 0);
+
+                    if ($rawMatId > 0 && $deductQty > 0) {
+                        // Ambil info bahan baku
+                        $bbStmt = $pdo->prepare("SELECT name, unit, stock_current FROM inventory_items WHERE id = :id AND type = 'bahan_baku'");
+                        $bbStmt->execute([':id' => $rawMatId]);
+                        $bbItem = $bbStmt->fetch();
+
+                        if ($bbItem) {
+                            // Kurangi stok bahan baku
+                            $updBB->execute([':qty' => $deductQty, ':id' => $rawMatId]);
+
+                            // Catat mutasi KELUAR (OUT) pada bahan baku tersebut
+                            $insMutation->execute([
+                                ':item_id' => $rawMatId,
+                                ':quantity' => $deductQty,
+                                ':mutation_date' => date('Y-m-d'),
+                                ':officer_name' => $_SESSION['admin_user'] ?? 'Petugas Produksi BRMP DIY',
+                                ':dest' => "Produksi {$name}",
+                                ':notes' => "Bahan dipotong untuk pembuatan {$name} ({$stockCurrent} kg)"
+                            ]);
+
+                            // Rekam takaran formula (per 1 kg pakan)
+                            $amountPerUnit = ($stockCurrent > 0) ? ($deductQty / $stockCurrent) : $deductQty;
+                            $insRec->execute([
+                                ':product_id' => $newItemId,
+                                ':raw_material_id' => $rawMatId,
+                                ':amount_per_unit' => round($amountPerUnit, 4)
+                            ]);
+
+                            $deductedCount++;
+                            $deductedDetails[] = "{$bbItem['name']} (-{$deductQty} {$bbItem['unit']})";
+                        }
+                    }
+                }
+            }
+
+            $pdo->commit();
+
+            $msg = ($type === 'produk')
+                ? "Pakan jadi '{$name}' ({$stockCurrent} kg) berhasil disimpan!"
+                : "Bahan baku '{$name}' ({$stockCurrent} kg) berhasil disimpan!";
+
+            if ($deductedCount > 0) {
+                $msg .= " " . $deductedCount . " bahan baku berhasil dipotong: " . implode(', ', $deductedDetails);
+            }
+
+            echo json_encode([
+                'success' => true,
+                'message' => $msg,
+                'item_id' => $newItemId
+            ]);
             break;
 
         case 'add_mutation':
@@ -354,59 +457,46 @@ try {
                 exit;
             }
 
-            $name = trim($_POST['name'] ?? '');
-            $code = trim($_POST['code'] ?? '');
-            $category = trim($_POST['category'] ?? '');
-            $targetStage = trim($_POST['target_stage'] ?? '');
-            $unit = trim($_POST['unit'] ?? 'kg');
-            $stockCurrent = (float)($_POST['stock_current'] ?? 0);
-            $stockMinimum = (float)($_POST['stock_minimum'] ?? 10);
-            $location = trim($_POST['storage_location'] ?? 'Gudang Utama BRMP DIY');
-            $price = (int)($_POST['price_per_unit'] ?? 0);
-            $imageUrl = trim($_POST['image_url'] ?? '');
-            $description = trim($_POST['description'] ?? '');
-
-            $spec1Label = trim($_POST['spec_1_label'] ?? '');
-            $spec1Value = trim($_POST['spec_1_value'] ?? '');
-            $spec2Label = trim($_POST['spec_2_label'] ?? '');
-            $spec2Value = trim($_POST['spec_2_value'] ?? '');
-            $spec3Label = trim($_POST['spec_3_label'] ?? '');
-            $spec3Value = trim($_POST['spec_3_value'] ?? '');
-
-            if (empty($name) || empty($category)) {
-                echo json_encode(['success' => false, 'message' => 'Nama dan Kategori wajib diisi!']);
+            $currStmt = $pdo->prepare("SELECT * FROM inventory_items WHERE id = :id");
+            $currStmt->execute([':id' => $id]);
+            $existing = $currStmt->fetch();
+            if (!$existing) {
+                echo json_encode(['success' => false, 'message' => 'Item tidak ditemukan']);
                 exit;
             }
 
-            // Check duplicate code if changed
-            if (!empty($code)) {
-                $chk = $pdo->prepare("SELECT id FROM inventory_items WHERE code = :code AND id != :id");
-                $chk->execute([':code' => $code, ':id' => $id]);
-                if ($chk->fetch()) {
-                    echo json_encode(['success' => false, 'message' => 'Kode barang sudah digunakan oleh item lain!']);
-                    exit;
+            $name = trim($_POST['name'] ?? $existing['name']);
+            $stockCurrent = isset($_POST['stock_current']) ? (float)$_POST['stock_current'] : (float)$existing['stock_current'];
+
+            if (empty($name)) {
+                echo json_encode(['success' => false, 'message' => 'Nama item wajib diisi!']);
+                exit;
+            }
+
+            // Handle Foto Baru jika diunggah atau diisi URL
+            $imageUrl = $existing['image_url'];
+            if (!empty($_FILES['image_file']['name']) && $_FILES['image_file']['error'] === UPLOAD_ERR_OK) {
+                $allowedExts = ['jpg', 'jpeg', 'png', 'webp', 'gif'];
+                $ext = strtolower(pathinfo($_FILES['image_file']['name'], PATHINFO_EXTENSION));
+                if (in_array($ext, $allowedExts)) {
+                    $uploadsDir = __DIR__ . '/uploads';
+                    if (!is_dir($uploadsDir)) {
+                        mkdir($uploadsDir, 0777, true);
+                    }
+                    $filename = 'item_' . time() . '_' . bin2hex(random_bytes(3)) . '.' . $ext;
+                    if (move_uploaded_file($_FILES['image_file']['tmp_name'], $uploadsDir . '/' . $filename)) {
+                        $imageUrl = 'uploads/' . $filename;
+                    }
                 }
+            } elseif (!empty($_POST['image_url'])) {
+                $imageUrl = trim($_POST['image_url']);
             }
 
             $upd = $pdo->prepare("
                 UPDATE inventory_items SET
                     name = :name,
-                    code = :code,
-                    category = :category,
-                    target_stage = :target_stage,
-                    unit = :unit,
                     stock_current = :stock_current,
-                    stock_minimum = :stock_minimum,
-                    storage_location = :storage_location,
-                    price_per_unit = :price_per_unit,
                     image_url = :image_url,
-                    spec_1_label = :spec_1_label,
-                    spec_1_value = :spec_1_value,
-                    spec_2_label = :spec_2_label,
-                    spec_2_value = :spec_2_value,
-                    spec_3_label = :spec_3_label,
-                    spec_3_value = :spec_3_value,
-                    description = :description,
                     updated_at = CURRENT_TIMESTAMP
                 WHERE id = :id
             ");
@@ -414,25 +504,11 @@ try {
             $upd->execute([
                 ':id' => $id,
                 ':name' => $name,
-                ':code' => $code,
-                ':category' => $category,
-                ':target_stage' => $targetStage,
-                ':unit' => $unit,
                 ':stock_current' => $stockCurrent,
-                ':stock_minimum' => $stockMinimum,
-                ':storage_location' => $location,
-                ':price_per_unit' => $price,
-                ':image_url' => $imageUrl,
-                ':spec_1_label' => $spec1Label,
-                ':spec_1_value' => $spec1Value,
-                ':spec_2_label' => $spec2Label,
-                ':spec_2_value' => $spec2Value,
-                ':spec_3_label' => $spec3Label,
-                ':spec_3_value' => $spec3Value,
-                ':description' => $description
+                ':image_url' => $imageUrl
             ]);
 
-            echo json_encode(['success' => true, 'message' => 'Data item berhasil diperbarui!']);
+            echo json_encode(['success' => true, 'message' => "Data '{$name}' berhasil diperbarui!"]);
             break;
 
         case 'save_recipe':

@@ -955,220 +955,202 @@ $metricsPRD = getMetrics($produkList);
         </div>
     </dialog>
 
-    <!-- Modal 5: Tambah Item Baru (Bahan Baku / Produk Pakan Jadi) -->
-    <dialog id="modal-add-item" class="w-full max-w-lg bg-white p-6 rounded-3xl shadow-2xl">
+    <!-- Modal 5: Tambah Komoditas Baru (Super Simpel & Multi-Slide untuk Pakan Jadi) -->
+    <dialog id="modal-add-item" class="w-full max-w-lg bg-white p-6 sm:p-7 rounded-3xl shadow-2xl">
+        <!-- Header Modal -->
         <div class="flex items-center justify-between pb-3 border-b border-slate-100">
-            <h3 class="text-lg font-black text-slate-800">Tambah Komoditas Baru</h3>
-            <button onclick="closeModal('modal-add-item')" class="p-1 text-slate-400 hover:text-slate-700 rounded-lg">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                </svg>
+            <div class="flex items-center space-x-3">
+                <div id="add-modal-icon-container" class="w-10 h-10 rounded-2xl bg-emerald-50 text-emerald-700 flex items-center justify-center font-bold text-xl border border-emerald-100">
+                    📦
+                </div>
+                <div>
+                    <h3 id="add-modal-title" class="text-base sm:text-lg font-black text-slate-900">Tambah Pakan Jadi Baru</h3>
+                    <p id="add-modal-subtitle" class="text-[11px] text-slate-400 font-semibold">Langkah 1 dari 2: Informasi Pakan</p>
+                </div>
+            </div>
+            <button type="button" onclick="closeModal('modal-add-item')" class="p-1.5 text-slate-400 hover:text-slate-700 rounded-xl hover:bg-slate-100 transition-smooth">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
             </button>
         </div>
 
-        <form id="form-add-item" class="space-y-3.5 mt-4">
-            <!-- Tipe Komoditas -->
-            <div>
-                <label class="block text-xs font-bold text-slate-700 mb-1">Tipe Fitur *</label>
-                <select name="type" id="add-type" required class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500">
-                    <option value="produk">📦 1. Pakan Jadi (Produk Olahan)</option>
-                    <option value="bahan_baku">🌾 2. Bahan Baku Pakan</option>
-                </select>
+        <!-- Stepper Indicator (Hanya muncul jika menambah Pakan Jadi) -->
+        <div id="add-stepper-bar" class="flex items-center justify-between mt-3 mb-2 px-1">
+            <div class="flex items-center space-x-2">
+                <span id="step-dot-1" class="w-6 h-6 rounded-full bg-emerald-600 text-white font-bold text-xs flex items-center justify-center shadow-xs">1</span>
+                <span id="step-text-1" class="text-xs font-bold text-emerald-800">1. Nama, Berat & Foto</span>
             </div>
-
-            <div class="grid grid-cols-2 gap-3">
-                <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1">Kode Barang *</label>
-                    <input type="text" name="code" id="add-code" required placeholder="Contoh: PRD-008" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl font-mono">
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1">Kategori *</label>
-                    <input type="text" name="category" required placeholder="Contoh: Pakan Ikan" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl">
-                </div>
+            <div class="h-0.5 flex-1 bg-slate-200 mx-3"></div>
+            <div class="flex items-center space-x-2">
+                <span id="step-dot-2" class="w-6 h-6 rounded-full bg-slate-200 text-slate-500 font-bold text-xs flex items-center justify-center">2</span>
+                <span id="step-text-2" class="text-xs font-semibold text-slate-400">2. Potong Bahan Baku</span>
             </div>
+        </div>
 
-            <div>
-                <label class="block text-xs font-bold text-slate-700 mb-1">Nama Item Komoditas *</label>
-                <input type="text" name="name" required placeholder="Contoh: Pelet Apung Grower Nila Super" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl font-semibold">
-            </div>
+        <form id="form-add-item" enctype="multipart/form-data" class="mt-4">
+            <input type="hidden" name="type" id="add-type" value="produk">
 
-            <div class="grid grid-cols-2 gap-3">
+            <!-- SLIDE 1: Info Dasar (Nama, Jumlah Berat, Foto) -->
+            <div id="add-slide-1" class="space-y-4">
+                <!-- 1. Nama Item -->
                 <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1">Fase Target / Varietas</label>
-                    <input type="text" name="target_stage" placeholder="Starter / Grower / Konsumsi" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl">
+                    <label class="block text-xs font-bold text-slate-700 mb-1.5">
+                        Nama <span id="label-name-type">Pakan Jadi</span> <span class="text-rose-500">*</span>
+                    </label>
+                    <input type="text" name="name" id="add-name" required placeholder="Contoh: Pelet Apung Nila Super" 
+                           class="w-full px-3.5 py-2.5 text-sm border border-slate-300 rounded-2xl font-bold focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all placeholder:text-slate-400 placeholder:font-normal">
                 </div>
-                <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1">Satuan Kemasan *</label>
-                    <input type="text" name="unit" required value="kg" placeholder="kg, sak, zak" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl">
-                </div>
-            </div>
 
-            <div class="grid grid-cols-3 gap-3">
+                <!-- 2. Jumlah Berat -->
                 <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1">Stok Awal</label>
-                    <input type="number" step="0.1" name="stock_current" value="0" required class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl font-bold">
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1">Batas Minimum</label>
-                    <input type="number" step="0.1" name="stock_minimum" value="50" required class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl">
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1">Harga (Rp)</label>
-                    <input type="number" step="100" name="price_per_unit" value="0" required class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl">
-                </div>
-            </div>
-
-            <!-- Parameter Mutu -->
-            <div class="p-3 bg-slate-50 rounded-2xl border border-slate-200 space-y-2">
-                <span class="block text-xs font-bold text-slate-700">Parameter Mutu / Spesifikasi Laboratorium</span>
-                <div class="grid grid-cols-3 gap-2">
-                    <div>
-                        <input type="text" name="spec_1_label" placeholder="Protein Kasar" value="Protein Kasar" class="w-full px-2 py-1 text-xs border rounded-lg mb-1">
-                        <input type="text" name="spec_1_value" placeholder="32%" class="w-full px-2 py-1 text-xs border rounded-lg">
+                    <label class="block text-xs font-bold text-slate-700 mb-1.5">
+                        Jumlah Berat <span class="text-rose-500">*</span>
+                    </label>
+                    <div class="relative">
+                        <input type="number" step="0.1" min="0.1" name="stock_current" id="add-stock" required placeholder="0" 
+                               class="w-full pl-3.5 pr-14 py-2.5 text-base border border-slate-300 rounded-2xl font-black text-slate-900 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all">
+                        <span class="absolute right-3.5 top-3 text-xs font-bold text-slate-400 uppercase">kg</span>
                     </div>
-                    <div>
-                        <input type="text" name="spec_2_label" placeholder="Kadar Air" value="Kadar Air" class="w-full px-2 py-1 text-xs border rounded-lg mb-1">
-                        <input type="text" name="spec_2_value" placeholder="Max 11%" class="w-full px-2 py-1 text-xs border rounded-lg">
-                    </div>
-                    <div>
-                        <input type="text" name="spec_3_label" placeholder="FCR / Sertifikasi" value="FCR Target" class="w-full px-2 py-1 text-xs border rounded-lg mb-1">
-                        <input type="text" name="spec_3_value" placeholder="1.2" class="w-full px-2 py-1 text-xs border rounded-lg">
+                    <p class="text-[11px] text-slate-400 mt-1">Total kuantitas berat awal yang ditambahkan ke stok gudang.</p>
+                </div>
+
+                <!-- 3. Foto Produk / Bahan -->
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1.5">
+                        Foto Produk / Bahan
+                    </label>
+                    <div class="space-y-2.5">
+                        <div class="flex items-center gap-2">
+                            <input type="file" name="image_file" id="add-image-file" accept="image/*" onchange="previewAddImage(this)"
+                                   class="w-full text-xs text-slate-500 file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100 cursor-pointer border border-slate-200 rounded-2xl p-1 bg-slate-50/50">
+                        </div>
+                        <div class="relative">
+                            <input type="url" name="image_url" id="add-image-url" placeholder="Atau paste link URL gambar foto (https://...)" 
+                                   oninput="previewAddImageUrl(this.value)"
+                                   class="w-full px-3.5 py-2 text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500 placeholder:text-slate-400">
+                        </div>
+
+                        <!-- Preview Foto Box -->
+                        <div id="add-image-preview-container" class="hidden h-32 w-full bg-slate-50 rounded-2xl border border-slate-200 overflow-hidden flex items-center justify-center p-2 relative group">
+                            <img id="add-image-preview" src="" alt="Preview Foto" class="max-h-full max-w-full object-contain rounded-xl">
+                            <span class="absolute bottom-1.5 right-2 bg-black/60 backdrop-blur-xs text-white text-[10px] px-2 py-0.5 rounded-full font-mono">Foto Terpilih</span>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1">Lokasi Penyimpanan di Gudang</label>
-                    <input type="text" name="storage_location" value="Gudang Utama BRMP DIY" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl">
+                <!-- Action Buttons Slide 1 -->
+                <div class="flex items-center justify-between pt-3 border-t border-slate-100">
+                    <button type="button" onclick="closeModal('modal-add-item')" class="px-4 py-2.5 text-xs font-bold text-slate-500 hover:text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl transition-smooth">
+                        Batal
+                    </button>
+                    <!-- Untuk Pakan Jadi: Tombol Lanjut ke Slide 2 -->
+                    <button type="button" id="btn-next-slide" onclick="goToSlide2()" class="px-5 py-2.5 text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-500 rounded-xl shadow-md transition-smooth flex items-center space-x-1.5">
+                        <span>Lanjut: Potong Bahan Baku</span>
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                    </button>
+                    <!-- Untuk Bahan Baku: Tombol Langsung Simpan -->
+                    <button type="submit" id="btn-submit-single" class="hidden px-5 py-2.5 text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-500 rounded-xl shadow-md transition-smooth">
+                        Simpan Bahan Baku
+                    </button>
                 </div>
-                <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1">URL Foto Produk</label>
-                    <input type="url" name="image_url" placeholder="https://..." class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl">
+            </div>
+
+            <!-- SLIDE 2: Pengurangan Bahan Baku (Hanya Pakan Jadi, Fleksibel) -->
+            <div id="add-slide-2" class="hidden space-y-4">
+                <div class="bg-amber-50/80 border border-amber-200/90 rounded-2xl p-3.5">
+                    <div class="flex items-center space-x-2 text-amber-800 text-xs font-bold mb-1">
+                        <span>🌾 Pengurangan Stok Bahan Baku (Fleksibel & Opsional)</span>
+                    </div>
+                    <p class="text-[11px] text-amber-700 leading-relaxed">
+                        Pilih bahan baku yang digunakan untuk pembuatan <strong id="summary-feed-name" class="font-extrabold text-amber-900 underline">Pakan</strong> ini. Stok bahan baku yang dipilih akan otomatis dipotong dari gudang. Jika tidak ingin mengurangi bahan baku, bagian ini bisa dilewati.
+                    </p>
                 </div>
-            </div>
 
-            <div>
-                <label class="block text-xs font-bold text-slate-700 mb-1">Deskripsi Tambahan</label>
-                <textarea name="description" rows="2" placeholder="Catatan keunggulan nutrisi pakan atau standar sertifikasi..." class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl"></textarea>
-            </div>
+                <!-- Dynamic List Pengurangan Bahan Baku -->
+                <div class="space-y-2.5">
+                    <div class="flex items-center justify-between">
+                        <label class="text-xs font-bold text-slate-700">Daftar Bahan Baku yang Dikurangi:</label>
+                        <button type="button" onclick="addDeductRow()" class="text-xs font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 px-3 py-1.5 rounded-xl border border-emerald-200 transition-smooth flex items-center space-x-1 cursor-pointer">
+                            <span>+ Tambah Bahan Baku</span>
+                        </button>
+                    </div>
 
-            <div class="flex items-center justify-end space-x-2 pt-3 border-t border-slate-100">
-                <button type="button" onclick="closeModal('modal-add-item')" class="px-4 py-2 text-xs font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-xl transition-smooth">
-                    Batal
-                </button>
-                <button type="submit" class="px-5 py-2 text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-500 rounded-xl shadow-md transition-smooth">
-                    Simpan Data
-                </button>
+                    <div id="deduct-rows-container" class="space-y-2 max-h-56 overflow-y-auto pr-1 custom-scroll">
+                        <!-- Dynamic Rows generated by JS -->
+                    </div>
+
+                    <div id="empty-deduct-notice" class="text-center py-4 px-3 bg-slate-50 border border-dashed border-slate-200 rounded-2xl text-xs text-slate-400">
+                        Belum ada bahan baku yang dipilih untuk dipotong. Klik <strong class="text-emerald-700">+ Tambah Bahan Baku</strong> di atas untuk memotong stok bahan baku.
+                    </div>
+                </div>
+
+                <!-- Action Buttons Slide 2 -->
+                <div class="flex items-center justify-between pt-3 border-t border-slate-100">
+                    <button type="button" onclick="goToSlide1()" class="px-4 py-2.5 text-xs font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-xl transition-smooth flex items-center space-x-1.5 cursor-pointer">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                        <span>Kembali</span>
+                    </button>
+                    <button type="submit" id="btn-submit-with-deduct" class="px-6 py-2.5 text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-500 rounded-xl shadow-md transition-smooth flex items-center space-x-1.5 cursor-pointer">
+                        <span>Simpan Pakan Jadi & Potong Stok</span>
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                    </button>
+                </div>
             </div>
         </form>
     </dialog>
 
-    <!-- Modal 6: Edit Item (CRUD) -->
-    <dialog id="modal-edit-item" class="w-full max-w-lg bg-white p-6 rounded-3xl shadow-2xl">
+    <!-- Modal 6: Edit Item (CRUD Sederhana: Nama, Berat, Foto) -->
+    <dialog id="modal-edit-item" class="w-full max-w-md bg-white p-6 rounded-3xl shadow-2xl">
         <div class="flex items-center justify-between pb-3 border-b border-slate-100">
-            <h3 class="text-lg font-black text-slate-800">Edit Data Komoditas</h3>
-            <button onclick="closeModal('modal-edit-item')" class="p-1 text-slate-400 hover:text-slate-700 rounded-lg">
+            <div class="flex items-center space-x-2.5">
+                <span class="text-xl">✏️</span>
+                <h3 class="text-base sm:text-lg font-black text-slate-800">Edit Data Komoditas</h3>
+            </div>
+            <button type="button" onclick="closeModal('modal-edit-item')" class="p-1 text-slate-400 hover:text-slate-700 rounded-lg">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                 </svg>
             </button>
         </div>
 
-        <form id="form-edit-item" class="space-y-3.5 mt-4">
+        <form id="form-edit-item" enctype="multipart/form-data" class="space-y-4 mt-4">
             <input type="hidden" id="edit-id" name="id">
+            <input type="hidden" id="edit-type" name="type">
 
+            <!-- Nama -->
             <div>
-                <label class="block text-xs font-bold text-slate-700 mb-1">Tipe Fitur *</label>
-                <select name="type" id="edit-type" required class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl font-bold">
-                    <option value="produk">📦 1. Pakan Jadi (Produk Olahan)</option>
-                    <option value="bahan_baku">🌾 2. Bahan Baku Pakan</option>
-                </select>
+                <label class="block text-xs font-bold text-slate-700 mb-1.5">Nama Item *</label>
+                <input type="text" id="edit-name" name="name" required class="w-full px-3.5 py-2.5 text-sm border border-slate-300 rounded-2xl font-bold focus:ring-2 focus:ring-emerald-500">
             </div>
 
-            <div class="grid grid-cols-2 gap-3">
-                <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1">Kode Barang *</label>
-                    <input type="text" id="edit-code" name="code" required class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl font-mono">
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1">Kategori *</label>
-                    <input type="text" id="edit-category" name="category" required class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl">
-                </div>
-            </div>
-
+            <!-- Jumlah Berat / Stok Saat Ini -->
             <div>
-                <label class="block text-xs font-bold text-slate-700 mb-1">Nama Item *</label>
-                <input type="text" id="edit-name" name="name" required class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl font-bold">
-            </div>
-
-            <div class="grid grid-cols-2 gap-3">
-                <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1">Fase Target / Varietas</label>
-                    <input type="text" id="edit-target-stage" name="target_stage" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl">
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1">Satuan Kemasan *</label>
-                    <input type="text" id="edit-unit" name="unit" required class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl font-bold">
+                <label class="block text-xs font-bold text-slate-700 mb-1.5">Jumlah Berat (Stok Saat Ini) *</label>
+                <div class="relative">
+                    <input type="number" step="0.1" id="edit-stock-current" name="stock_current" required class="w-full pl-3.5 pr-14 py-2.5 text-base border border-slate-300 rounded-2xl font-black text-slate-900 focus:ring-2 focus:ring-emerald-500">
+                    <span id="edit-unit-label" class="absolute right-3.5 top-3 text-xs font-bold text-slate-400 uppercase">kg</span>
                 </div>
             </div>
 
-            <div class="grid grid-cols-3 gap-3">
-                <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1">Stok Saat Ini</label>
-                    <input type="number" step="0.1" id="edit-stock-current" name="stock_current" required class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl font-black text-slate-800">
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1">Batas Minimum</label>
-                    <input type="number" step="0.1" id="edit-stock-minimum" name="stock_minimum" required class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl">
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1">Harga Satuan (Rp)</label>
-                    <input type="number" step="100" id="edit-price" name="price_per_unit" required class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl">
-                </div>
-            </div>
-
-            <!-- Parameter Mutu -->
-            <div class="p-3 bg-slate-50 rounded-2xl border border-slate-200 space-y-2">
-                <span class="block text-xs font-bold text-slate-700">Parameter Mutu / Spesifikasi Laboratorium</span>
-                <div class="grid grid-cols-3 gap-2">
-                    <div>
-                        <input type="text" id="edit-spec1-label" name="spec_1_label" placeholder="Label 1" class="w-full px-2 py-1 text-xs border rounded-lg mb-1">
-                        <input type="text" id="edit-spec1-val" name="spec_1_value" placeholder="Nilai" class="w-full px-2 py-1 text-xs border rounded-lg">
-                    </div>
-                    <div>
-                        <input type="text" id="edit-spec2-label" name="spec_2_label" placeholder="Label 2" class="w-full px-2 py-1 text-xs border rounded-lg mb-1">
-                        <input type="text" id="edit-spec2-val" name="spec_2_value" placeholder="Nilai" class="w-full px-2 py-1 text-xs border rounded-lg">
-                    </div>
-                    <div>
-                        <input type="text" id="edit-spec3-label" name="spec_3_label" placeholder="Label 3" class="w-full px-2 py-1 text-xs border rounded-lg mb-1">
-                        <input type="text" id="edit-spec3-val" name="spec_3_value" placeholder="Nilai" class="w-full px-2 py-1 text-xs border rounded-lg">
+            <!-- Foto -->
+            <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1.5">Foto Produk / Bahan</label>
+                <div class="space-y-2">
+                    <input type="file" name="image_file" id="edit-image-file" accept="image/*" onchange="previewEditImage(this)"
+                           class="w-full text-xs text-slate-500 file:mr-3 file:py-2 file:px-3.5 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100 cursor-pointer border border-slate-200 rounded-2xl p-1 bg-slate-50/50">
+                    <input type="url" id="edit-image" name="image_url" placeholder="Atau link URL foto (https://...)" oninput="previewEditImageUrl(this.value)"
+                           class="w-full px-3.5 py-2 text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500">
+                    <div id="edit-image-preview-container" class="h-28 w-full bg-slate-50 rounded-2xl border border-slate-200 overflow-hidden flex items-center justify-center p-2 relative">
+                        <img id="edit-image-preview" src="" alt="Foto Item" class="max-h-full max-w-full object-contain rounded-xl">
                     </div>
                 </div>
-            </div>
-
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1">Lokasi Penyimpanan di Gudang</label>
-                    <input type="text" id="edit-location" name="storage_location" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl">
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1">URL Foto Produk</label>
-                    <input type="url" id="edit-image" name="image_url" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl">
-                </div>
-            </div>
-
-            <div>
-                <label class="block text-xs font-bold text-slate-700 mb-1">Deskripsi Tambahan</label>
-                <textarea id="edit-desc" name="description" rows="2" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl"></textarea>
             </div>
 
             <div class="flex items-center justify-between pt-4 border-t border-slate-100">
-                <button type="button" onclick="confirmDeleteItemFromEdit()" class="inline-flex items-center space-x-1.5 px-4 py-2 text-xs font-bold text-rose-600 hover:text-white bg-rose-50 hover:bg-rose-600 rounded-xl border border-rose-200 transition-smooth">
+                <button type="button" onclick="confirmDeleteItemFromEdit()" class="inline-flex items-center space-x-1.5 px-3.5 py-2 text-xs font-bold text-rose-600 hover:text-white bg-rose-50 hover:bg-rose-600 rounded-xl border border-rose-200 transition-smooth">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                     </svg>
-                    <span>Hapus Item Ini</span>
+                    <span>Hapus</span>
                 </button>
                 <div class="flex items-center space-x-2">
                     <button type="button" onclick="closeModal('modal-edit-item')" class="px-4 py-2 text-xs font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-xl transition-smooth">
@@ -1178,6 +1160,9 @@ $metricsPRD = getMetrics($produkList);
                         Simpan Perubahan
                     </button>
                 </div>
+            </div>
+        </form>
+    </dialog>
             </div>
         </form>
     </dialog>
@@ -1416,6 +1401,16 @@ $metricsPRD = getMetrics($produkList);
     </div>
 
     <!-- Scripts -->
+    <script>
+        const initialRawMaterials = <?= json_encode(array_map(function($b) {
+            return [
+                'id' => (int)$b['id'],
+                'name' => $b['name'],
+                'stock' => (float)$b['stock_current'],
+                'unit' => $b['unit']
+            ];
+        }, $bahanBakuList), JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) ?>;
+    </script>
     <script src="assets/js/app.js"></script>
 </body>
 </html>
