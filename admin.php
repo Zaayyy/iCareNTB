@@ -110,14 +110,6 @@ $metricsPRD = getMetrics($produkList);
 
                 <!-- Admin Action Buttons -->
                 <div class="flex items-center space-x-2 sm:space-x-2.5">
-                    <!-- Catat Produksi Pakan -->
-                    <button onclick="openProductionModal()" class="inline-flex items-center space-x-1.5 px-3.5 py-2 text-xs sm:text-sm font-bold text-slate-900 bg-amber-400 hover:bg-amber-300 rounded-full shadow-md hover:shadow-lg transition-smooth border border-amber-300/60" title="Catat Produksi Pakan & Kurangi Bahan Baku Otomatis">
-                        <svg class="w-4 h-4 text-slate-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path>
-                        </svg>
-                        <span>🏭 Produksi Pakan</span>
-                    </button>
-
                     <!-- Catat Mutasi Manual -->
                     <button onclick="openModal('modal-mutation')" class="inline-flex items-center space-x-1.5 px-3.5 py-2 text-xs sm:text-sm font-bold text-emerald-900 bg-white hover:bg-emerald-50 rounded-full shadow-md transition-smooth">
                         <svg class="w-4 h-4 text-emerald-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -243,13 +235,10 @@ $metricsPRD = getMetrics($produkList);
                 <div>
                     <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">Kelola Produk Pakan Jadi Olahan</h2>
                     <p class="text-xs sm:text-sm text-slate-500 mt-1 max-w-2xl leading-relaxed">
-                        Manajemen katalog pakan olahan berstandar mutu BRMP DIY. Anda dapat menambah, mengedit, mengatur formula bahan baku, serta mencatat produksi yang otomatis memotong bahan baku.
+                        Manajemen katalog produk pakan jadi olahan BRMP DIY. Pantau stok ketersediaan siap salur, lakukan distribusi ke kelompok binaan, dan kelola varian pakan olahan.
                     </p>
                 </div>
                 <div class="flex items-center space-x-3 shrink-0">
-                    <button onclick="openProductionModal()" class="inline-flex items-center space-x-1.5 px-4 py-2.5 rounded-full bg-amber-400 hover:bg-amber-300 text-slate-900 text-xs sm:text-sm font-bold shadow-xs transition-smooth">
-                        <span>🏭 Catat Produksi Pakan</span>
-                    </button>
                     <button onclick="refreshData()" class="inline-flex items-center space-x-2 px-4 py-2.5 rounded-full border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs sm:text-sm font-semibold shadow-xs transition-smooth">
                         <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
@@ -263,24 +252,6 @@ $metricsPRD = getMetrics($produkList);
                         </svg>
                     </button>
                 </div>
-            </div>
-
-            <!-- Banner Otomatisasi Formula BOM -->
-            <div class="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200/80 p-4 rounded-3xl flex items-start space-x-3.5 shadow-xs no-print">
-                <div class="w-9 h-9 rounded-2xl bg-amber-500 text-white flex items-center justify-center shrink-0 shadow-xs">
-                    <svg class="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
-                    </svg>
-                </div>
-                <div class="flex-1">
-                    <h3 class="text-xs sm:text-sm font-bold text-amber-900">Otomatisasi Formula Bill of Materials (BOM) Pakan</h3>
-                    <p class="text-[11px] sm:text-xs text-amber-800/90 mt-0.5 leading-relaxed">
-                        Saat mencatat <strong>Produksi Pakan</strong>, sistem akan secara otomatis memotong stok bahan baku terkait (seperti Jagung, Bungkil Kedelai, Tepung Ikan, Dedak, Premix) dan mencegah stok minus jika bahan baku tidak mencukupi.
-                    </p>
-                </div>
-                <button onclick="openProductionModal()" class="shrink-0 px-3.5 py-1.5 text-xs font-bold text-amber-900 bg-amber-300 hover:bg-amber-200 rounded-xl transition-smooth">
-                    + Mulai Produksi
-                </button>
             </div>
 
             <!-- Cards Grid Produk (CRUD Penuh) -->
@@ -375,29 +346,17 @@ $metricsPRD = getMetrics($produkList);
                         </div>
                     </div>
 
-                    <!-- Action Buttons Section (Clean 2x2 Grid) -->
+                    <!-- Action Buttons Section -->
                     <div class="mt-4 pt-3 border-t border-slate-100 space-y-2">
-                        <!-- Row 1: Primary Operations -->
                         <div class="grid grid-cols-2 gap-2">
-                            <button type="button" onclick="openProductionModal(<?= $item['id'] ?>)" class="inline-flex items-center justify-center space-x-1.5 py-2 px-3 text-xs font-bold text-white bg-amber-500 hover:bg-amber-600 rounded-xl shadow-xs transition-smooth" title="Catat Produksi Pakan">
-                                <span>🏭 Produksi</span>
-                            </button>
                             <button type="button" onclick='openDistributeModal(<?= json_encode($item) ?>)' class="inline-flex items-center justify-center space-x-1.5 py-2 px-3 text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 rounded-xl shadow-xs transition-smooth" title="Salurkan Produk">
                                 <span>📦 Salurkan</span>
                             </button>
-                        </div>
-
-                        <!-- Row 2: Secondary Utilities (Resep & Peta) -->
-                        <div class="grid grid-cols-2 gap-2">
-                            <button type="button" onclick='openRecipeBuilder(<?= (int)$item['id'] ?>, <?= htmlspecialchars(json_encode($item['name']), ENT_QUOTES) ?>)' class="inline-flex items-center justify-center space-x-1.5 py-1.5 px-2 text-[11px] font-bold text-slate-700 hover:text-amber-800 bg-slate-50 hover:bg-amber-50 rounded-xl border border-slate-200 hover:border-amber-300 transition-smooth" title="Atur Formula Komposisi Bahan Baku">
-                                <span>🧪 Resep BOM</span>
-                            </button>
-                            <button type="button" onclick='openProductMapModal(<?= json_encode($item) ?>)' class="inline-flex items-center justify-center space-x-1.5 py-1.5 px-2 text-[11px] font-bold text-slate-700 hover:text-emerald-800 bg-slate-50 hover:bg-emerald-50 rounded-xl border border-slate-200 hover:border-emerald-300 transition-smooth" title="Lihat Peta Distribusi">
+                            <button type="button" onclick='openProductMapModal(<?= json_encode($item) ?>)' class="inline-flex items-center justify-center space-x-1.5 py-2 px-2.5 text-xs font-bold text-slate-700 hover:text-emerald-800 bg-slate-50 hover:bg-emerald-50 rounded-xl border border-slate-200 hover:border-emerald-300 transition-smooth" title="Lihat Peta Distribusi">
                                 <span>📍 Peta Sebaran</span>
                             </button>
                         </div>
 
-                        <!-- Row 3: Detail Modal Trigger -->
                         <button type="button" onclick='openDetailModal(<?= json_encode($item) ?>)' class="w-full inline-flex items-center justify-center space-x-1 text-xs font-bold text-slate-500 hover:text-emerald-700 py-1 transition-smooth cursor-pointer group/link">
                             <span>Detail Spesifikasi & Mutu</span>
                             <svg class="w-3.5 h-3.5 transition-transform duration-200 group-hover/link:translate-x-1 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -727,12 +686,6 @@ $metricsPRD = getMetrics($produkList);
             <!-- Footer Modal Detail -->
             <div class="pt-4 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-2">
                 <div class="flex flex-wrap items-center gap-1.5 w-full sm:w-auto">
-                    <button id="btn-produce-from-detail" type="button" onclick="triggerProductionFromDetail()" class="hidden px-3 py-1.5 text-xs font-bold text-slate-900 bg-amber-400 hover:bg-amber-300 rounded-xl shadow-xs transition-smooth">
-                        🏭 Produksi
-                    </button>
-                    <button id="btn-recipe-from-detail" type="button" onclick="triggerRecipeBuilderFromDetail()" class="hidden px-3 py-1.5 text-xs font-bold text-amber-900 bg-amber-100 hover:bg-amber-200 rounded-xl shadow-xs transition-smooth">
-                        🧪 Resep
-                    </button>
                     <button id="btn-distribute-from-detail" type="button" onclick="triggerDistributeFromDetail()" class="px-3 py-1.5 text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-500 rounded-xl shadow-xs transition-smooth">
                         📦 Salurkan
                     </button>
@@ -1160,161 +1113,6 @@ $metricsPRD = getMetrics($produkList);
                         Simpan Perubahan
                     </button>
                 </div>
-            </div>
-        </form>
-    </dialog>
-            </div>
-        </form>
-    </dialog>
-
-    <!-- Modal 7: Atur Resep Formula BOM -->
-    <dialog id="modal-recipe-builder" class="w-full max-w-2xl bg-white p-6 rounded-3xl shadow-2xl">
-        <div class="flex items-center justify-between pb-4 border-b border-slate-100">
-            <div class="flex items-center space-x-3">
-                <div class="p-2.5 bg-amber-100 text-amber-700 rounded-2xl">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
-                    </svg>
-                </div>
-                <div>
-                    <h3 class="text-lg font-black text-slate-800">Pengaturan Resep Formula Pakan</h3>
-                    <p class="text-xs text-slate-500">Atur takaran bahan baku yang terpotong otomatis per 1 unit <span id="builder-product-name" class="font-bold text-slate-700">Produk</span></p>
-                </div>
-            </div>
-            <button onclick="closeModal('modal-recipe-builder')" class="p-1 text-slate-400 hover:text-slate-700 rounded-lg">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                </svg>
-            </button>
-        </div>
-
-        <form id="form-recipe-builder" class="space-y-4 mt-4">
-            <input type="hidden" id="builder-product-id" name="product_id">
-
-            <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200">
-                <div class="flex items-center justify-between mb-2">
-                    <span class="text-xs font-bold text-slate-700">Daftar Bahan Baku Komposisi:</span>
-                    <button type="button" onclick="addRecipeRow()" class="px-3 py-1 bg-amber-400 hover:bg-amber-300 text-slate-900 font-bold text-xs rounded-lg transition-smooth">
-                        + Tambah Bahan
-                    </button>
-                </div>
-
-                <div id="recipe-rows-container" class="space-y-2">
-                    <!-- Dynamic rows inserted via JS -->
-                </div>
-            </div>
-
-            <div class="flex items-center justify-end space-x-2 pt-3 border-t border-slate-100">
-                <button type="button" onclick="closeModal('modal-recipe-builder')" class="px-4 py-2 text-xs font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-xl transition-smooth">
-                    Batal
-                </button>
-                <button type="submit" class="px-5 py-2 text-xs font-bold text-white bg-amber-600 hover:bg-amber-500 rounded-xl shadow-md transition-smooth">
-                    Simpan Formula Resep
-                </button>
-            </div>
-        </form>
-    </dialog>
-
-    <!-- Modal 8: Catat Produksi Pakan (Bill of Materials Otomatis) -->
-    <dialog id="modal-production" class="w-full max-w-2xl bg-white p-6 rounded-3xl shadow-2xl">
-        <div class="flex items-center justify-between pb-4 border-b border-slate-100">
-            <div class="flex items-center space-x-3">
-                <div class="p-2.5 bg-amber-400 text-slate-900 rounded-2xl">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
-                    </svg>
-                </div>
-                <div>
-                    <h3 class="text-lg font-black text-slate-800">Catat Produksi Pakan Olahan</h3>
-                    <p class="text-xs text-slate-500">Menambah stok produk & otomatis memotong stok bahan baku terkait sesuai resep</p>
-                </div>
-            </div>
-            <button onclick="closeModal('modal-production')" class="p-1 text-slate-400 hover:text-slate-700 rounded-lg">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                </svg>
-            </button>
-        </div>
-
-        <form id="form-production" class="space-y-4 mt-4">
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1">Pilih Produk Pakan Jadi yang Diproduksi *</label>
-                    <select id="prod-product-id" name="product_id" required class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500 font-bold">
-                        <option value="">-- Pilih Produk Pakan --</option>
-                        <?php foreach ($produkList as $pr): ?>
-                        <option value="<?= $pr['id'] ?>" data-unit="<?= htmlspecialchars($pr['unit']) ?>" data-stock="<?= $pr['stock_current'] ?>">
-                            📦 <?= htmlspecialchars($pr['name']) ?> (Stok: <?= number_format($pr['stock_current'], 0, ',', '.') ?> <?= $pr['unit'] ?>)
-                        </option>
-                        <?php endforeach; ?>
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1">Jumlah Hasil Produksi *</label>
-                    <div class="relative">
-                        <input type="number" step="0.1" min="0.1" id="prod-amount" name="amount" required placeholder="0" class="w-full pl-3 pr-12 py-2 text-sm border border-slate-300 rounded-xl font-black focus:ring-2 focus:ring-emerald-500">
-                        <span id="prod-unit-label" class="absolute right-3 top-2.5 text-xs font-bold text-slate-400">kg</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200">
-                <div class="flex items-center justify-between mb-2">
-                    <div class="flex items-center space-x-2">
-                        <span class="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block"></span>
-                        <h4 class="text-xs font-bold text-slate-800">Kalkulasi Otomatis Pemotongan Bahan Baku (BOM)</h4>
-                    </div>
-                    <span id="bom-status-badge" class="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-slate-200 text-slate-600">Pilih Produk & Kuantitas</span>
-                </div>
-
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left text-xs">
-                        <thead>
-                            <tr class="text-slate-500 border-b border-slate-200 uppercase text-[10px]">
-                                <th class="py-2 font-bold">Bahan Baku</th>
-                                <th class="py-2 text-center font-bold">Resep / Unit</th>
-                                <th class="py-2 text-center font-bold text-amber-800">Total Dipotong</th>
-                                <th class="py-2 text-center font-bold">Stok Gudang</th>
-                                <th class="py-2 text-right font-bold">Status Ketersediaan</th>
-                            </tr>
-                        </thead>
-                        <tbody id="bom-table-body" class="divide-y divide-slate-100">
-                            <!-- Populated dynamically by JS -->
-                        </tbody>
-                    </table>
-                </div>
-
-                <div id="bom-warning-box" class="hidden mt-3 p-3 bg-rose-50 border border-rose-200 rounded-xl text-rose-700 text-xs flex items-center space-x-2">
-                    <svg class="w-5 h-5 text-rose-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                    </svg>
-                    <span><strong>Perhatian:</strong> Salah satu bahan baku tidak mencukupi untuk jumlah produksi ini. Silakan kurangi kuantitas produksi atau tambah stok bahan baku terlebih dahulu.</span>
-                </div>
-            </div>
-
-            <div class="grid grid-cols-2 gap-3">
-                <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1">Tanggal Produksi</label>
-                    <input type="date" name="mutation_date" value="<?= date('Y-m-d') ?>" required class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl">
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1">Petugas Produksi BRMP</label>
-                    <input type="text" name="officer_name" value="<?= htmlspecialchars($_SESSION['admin_user'] ?? 'Tim Produksi BRMP DIY') ?>" required class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl">
-                </div>
-            </div>
-
-            <div>
-                <label class="block text-xs font-bold text-slate-700 mb-1">Catatan Batch Produksi</label>
-                <input type="text" name="notes" placeholder="Nomor batch, mesin mixer, atau hasil uji organoleptik..." class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl">
-            </div>
-
-            <div class="flex items-center justify-end space-x-2 pt-4 border-t border-slate-100">
-                <button type="button" onclick="closeModal('modal-production')" class="px-4 py-2.5 text-xs font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-xl transition-smooth">
-                    Batal
-                </button>
-                <button type="submit" id="btn-submit-production" class="px-6 py-2.5 text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-500 rounded-xl shadow-md transition-smooth">
-                    Mulai Produksi & Kurangi Bahan Baku
-                </button>
             </div>
         </form>
     </dialog>

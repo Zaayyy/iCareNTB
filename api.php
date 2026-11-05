@@ -9,7 +9,7 @@ $action = $_GET['action'] ?? $_POST['action'] ?? '';
 // Proteksi hak akses CRUD khusus admin
 $mutationActions = [
     'add_item', 'update_item', 'delete_item', 'quick_adjust', 
-    'add_mutation', 'record_production', 'save_recipe', 'distribute_item'
+    'add_mutation', 'distribute_item'
 ];
 
 if (in_array($action, $mutationActions, true)) {
@@ -62,20 +62,6 @@ try {
             $items = $stmt->fetchAll();
 
             echo json_encode(['success' => true, 'data' => $items]);
-            break;
-
-        case 'get_recipe':
-            $productId = (int)($_GET['product_id'] ?? 0);
-            $stmt = $pdo->prepare("
-                SELECT r.*, rm.name as raw_name, rm.code as raw_code, rm.unit as raw_unit, rm.stock_current as raw_stock
-                FROM product_recipes r
-                JOIN inventory_items rm ON r.raw_material_id = rm.id
-                WHERE r.product_id = :pid
-                ORDER BY r.amount_per_unit DESC
-            ");
-            $stmt->execute([':pid' => $productId]);
-            $recipe = $stmt->fetchAll();
-            echo json_encode(['success' => true, 'recipe' => $recipe]);
             break;
 
         case 'get_locations':
@@ -330,64 +316,6 @@ try {
                 exit;
             }
 
-            $deductedSummary = [];
-
-            // ========================================================
-            // LOGIC UTAMA: PRODUKSI PRODUK -> BAHAN BAKU OTOMATIS BERKURANG
-            // ========================================================
-            if ($type === 'IN' && $item['type'] === 'produk' && $autoDeduct) {
-                // Fetch recipes/formula for this product
-                $rStmt = $pdo->prepare("
-                    SELECT r.*, rm.name as raw_name, rm.stock_current as raw_stock, rm.unit as raw_unit
-                    FROM product_recipes r
-                    JOIN inventory_items rm ON r.raw_material_id = rm.id
-                    WHERE r.product_id = :pid
-                ");
-                $rStmt->execute([':pid' => $itemId]);
-                $ingredients = $rStmt->fetchAll();
-
-                if (!empty($ingredients)) {
-                    // Check availability of each ingredient
-                    $insufficient = [];
-                    foreach ($ingredients as $ing) {
-                        $needed = (float)$ing['amount_per_unit'] * $quantity;
-                        if ((float)$ing['raw_stock'] < $needed) {
-                            $insufficient[] = "{$ing['raw_name']} (dibutuhkan: {$needed} {$ing['raw_unit']}, tersedia: {$ing['raw_stock']} {$ing['raw_unit']})";
-                        }
-                    }
-
-                    if (!empty($insufficient)) {
-                        $pdo->rollBack();
-                        echo json_encode([
-                            'success' => false,
-                            'message' => "Stok bahan baku tidak mencukupi untuk memproduksi {$quantity} {$item['unit']} {$item['name']}!\n\nKekurangan:\n• " . implode("\n• ", $insufficient)
-                        ]);
-                        exit;
-                    }
-
-                    // Deduct each raw material & record log
-                    $deductStmt = $pdo->prepare("UPDATE inventory_items SET stock_current = stock_current - :needed, updated_at = CURRENT_TIMESTAMP WHERE id = :raw_id");
-                    $rawMutStmt = $pdo->prepare("
-                        INSERT INTO inventory_mutations (item_id, type, quantity, mutation_date, officer_name, destination_or_source, notes)
-                        VALUES (:item_id, 'OUT', :quantity, :mutation_date, :officer_name, :destination, :notes)
-                    ");
-
-                    foreach ($ingredients as $ing) {
-                        $needed = (float)$ing['amount_per_unit'] * $quantity;
-                        $deductStmt->execute([':needed' => $needed, ':raw_id' => $ing['raw_material_id']]);
-                        $rawMutStmt->execute([
-                            ':item_id' => $ing['raw_material_id'],
-                            ':quantity' => $needed,
-                            ':mutation_date' => $date,
-                            ':officer_name' => $officer,
-                            ':destination' => "Unit Produksi Pakan BRMP DIY",
-                            ':notes' => "Digunakan untuk produksi {$quantity} {$item['unit']} {$item['name']}"
-                        ]);
-                        $deductedSummary[] = "{$ing['raw_name']}: -{$needed} {$ing['raw_unit']}";
-                    }
-                }
-            }
-
             // Update product/item stock
             $newStock = ($type === 'IN') ? ($currentStock + $quantity) : ($currentStock - $quantity);
 
@@ -509,37 +437,6 @@ try {
             ]);
 
             echo json_encode(['success' => true, 'message' => "Data '{$name}' berhasil diperbarui!"]);
-            break;
-
-        case 'save_recipe':
-            $productId = (int)($_POST['product_id'] ?? 0);
-            $ingredients = $_POST['ingredients'] ?? []; // Array of [raw_material_id => amount]
-
-            if (!$productId) {
-                echo json_encode(['success' => false, 'message' => 'Produk tidak valid!']);
-                exit;
-            }
-
-            $pdo->beginTransaction();
-            // Delete old recipe
-            $del = $pdo->prepare("DELETE FROM product_recipes WHERE product_id = :pid");
-            $del->execute([':pid' => $productId]);
-
-            // Insert new recipe lines
-            $ins = $pdo->prepare("INSERT INTO product_recipes (product_id, raw_material_id, amount_per_unit) VALUES (:pid, :raw_id, :amount)");
-            
-            if (is_array($ingredients)) {
-                foreach ($ingredients as $ing) {
-                    $rawId = (int)($ing['raw_material_id'] ?? 0);
-                    $amount = (float)($ing['amount_per_unit'] ?? 0);
-                    if ($rawId > 0 && $amount > 0) {
-                        $ins->execute([':pid' => $productId, ':raw_id' => $rawId, ':amount' => $amount]);
-                    }
-                }
-            }
-
-            $pdo->commit();
-            echo json_encode(['success' => true, 'message' => 'Resep formula produksi berhasil disimpan!']);
             break;
 
         case 'quick_stock_adjust':
