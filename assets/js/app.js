@@ -49,13 +49,14 @@ function showToast(message, type = 'success') {
     }, 4500);
 }
 
-// Navigation Tabs for 3 Main Features
+// Navigation Tabs for Admin Features
 function initTabs() {
     const navButtons = document.querySelectorAll('.feature-tab-btn');
     const sections = {
-        'tab-bahan-baku': document.getElementById('section-bahan-baku'),
         'tab-produk': document.getElementById('section-produk'),
-        'tab-perbenihan': document.getElementById('section-perbenihan')
+        'tab-bahan-baku': document.getElementById('section-bahan-baku'),
+        'tab-perbenihan': document.getElementById('section-perbenihan'),
+        'tab-mutasi': document.getElementById('section-mutasi')
     };
 
     navButtons.forEach(btn => {

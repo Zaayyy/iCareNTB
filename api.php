@@ -2,8 +2,25 @@
 // api.php - REST API handler for Rumah Produksi BRMP DIY
 header('Content-Type: application/json');
 require_once __DIR__ . '/db.php';
+require_once __DIR__ . '/auth.php';
 
 $action = $_GET['action'] ?? $_POST['action'] ?? '';
+
+// Proteksi hak akses CRUD khusus admin
+$mutationActions = [
+    'add_item', 'update_item', 'delete_item', 'quick_adjust', 
+    'add_mutation', 'record_production', 'save_recipe', 'distribute_item'
+];
+
+if (in_array($action, $mutationActions, true)) {
+    if (!is_admin_logged_in()) {
+        echo json_encode([
+            'success' => false, 
+            'message' => 'Akses ditolak: Operasi ini hanya dapat dilakukan oleh Administrator. Silakan login terlebih dahulu.'
+        ]);
+        exit;
+    }
+}
 
 try {
     switch ($action) {
