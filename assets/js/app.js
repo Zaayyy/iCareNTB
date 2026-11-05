@@ -192,6 +192,22 @@ function setupEventHandlers() {
             formData.append('type', 'IN');
             formData.append('auto_deduct_raw', '1');
 
+            // Fallback memastikan item_id dan quantity selalu terbawa
+            if (!formData.get('item_id')) {
+                const pid = document.getElementById('prod-product-id')?.value;
+                if (pid) formData.set('item_id', pid);
+            }
+            if (!formData.get('quantity')) {
+                const qVal = document.getElementById('prod-amount')?.value || document.getElementById('prod-quantity')?.value;
+                if (qVal) formData.set('quantity', qVal);
+            }
+
+            const submitBtn = document.getElementById('btn-submit-production');
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Memproses Produksi...';
+            }
+
             try {
                 const res = await fetch('api.php', { method: 'POST', body: formData });
                 const data = await res.json();
@@ -199,23 +215,43 @@ function setupEventHandlers() {
                     showToast(data.message);
                     closeModal('modal-production');
                     formProduction.reset();
-                    setTimeout(() => window.location.reload(), 1500);
+                    setTimeout(() => window.location.reload(), 1200);
                 } else {
                     showToast(data.message, 'error');
                 }
             } catch (err) {
                 showToast('Gagal memproses produksi pakan.', 'error');
+            } finally {
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Mulai Produksi & Kurangi Bahan Baku';
+                }
             }
         });
     }
 
-    // Form Distribusi Benih & Penentuan Lokasi
-    const formDistribute = document.getElementById('form-distribute-seed');
+    // Form Distribusi Benih/Pakan & Penentuan Lokasi
+    const formDistribute = document.getElementById('form-distribute') || document.getElementById('form-distribute-seed');
     if (formDistribute) {
         formDistribute.addEventListener('submit', async (e) => {
             e.preventDefault();
             const formData = new FormData(formDistribute);
             formData.append('action', 'add_mutation');
+            formData.append('type', 'OUT');
+
+            // Fallback parameter
+            if (!formData.get('item_id')) {
+                const itId = document.getElementById('dist-item-id')?.value;
+                if (itId) formData.set('item_id', itId);
+            }
+            if (!formData.get('quantity')) {
+                const amt = document.getElementById('dist-amount')?.value || document.getElementById('dist-quantity')?.value;
+                if (amt) formData.set('quantity', amt);
+            }
+            if (!formData.get('destination_or_source')) {
+                const rec = document.getElementById('dist-recipient')?.value;
+                if (rec) formData.set('destination_or_source', rec);
+            }
 
             const submitBtn = document.getElementById('btn-submit-distribute');
             if (submitBtn) {
@@ -481,7 +517,7 @@ function triggerProductionFromDetail() {
 // Production Modal (Produksi Produk -> Bahan Baku Berkurang Otomatis)
 function setupProductionListeners() {
     const prodSelect = document.getElementById('prod-product-id');
-    const prodQtyInput = document.getElementById('prod-quantity');
+    const prodQtyInput = document.getElementById('prod-amount') || document.getElementById('prod-quantity');
 
     if (prodSelect) {
         prodSelect.addEventListener('change', () => {
@@ -530,7 +566,7 @@ async function loadRecipeAndRecalculate() {
 }
 
 function recalculateBOM() {
-    const qtyInput = document.getElementById('prod-quantity');
+    const qtyInput = document.getElementById('prod-amount') || document.getElementById('prod-quantity');
     const qty = parseFloat(qtyInput?.value) || 0;
     const tableBody = document.getElementById('bom-table-body');
     const submitBtn = document.getElementById('btn-submit-production');
@@ -1089,13 +1125,24 @@ function openDistributeModal(item) {
     if (!item) return;
     currentDistributingItem = item;
 
-    document.getElementById('dist-item-id').value = item.id;
-    document.getElementById('dist-item-name').textContent = item.name;
-    document.getElementById('dist-item-code').textContent = item.code;
-    document.getElementById('dist-unit-label').textContent = item.unit;
-    document.getElementById('dist-stock-display').textContent = `${Number(item.stock_current).toLocaleString('id-ID')} ${item.unit}`;
+    const itemIdInput = document.getElementById('dist-item-id');
+    if (itemIdInput) itemIdInput.value = item.id;
 
-    const qtyInput = document.getElementById('dist-quantity');
+    const itemNameEl = document.getElementById('dist-item-name');
+    if (itemNameEl) itemNameEl.textContent = item.name;
+
+    const itemCodeEl = document.getElementById('dist-item-code');
+    if (itemCodeEl) itemCodeEl.textContent = item.code;
+
+    const unitLabelEl = document.getElementById('dist-unit-label');
+    if (unitLabelEl) unitLabelEl.textContent = item.unit || 'unit';
+
+    const stockDisplayEl = document.getElementById('dist-item-stock') || document.getElementById('dist-stock-display');
+    if (stockDisplayEl) {
+        stockDisplayEl.textContent = `${(parseFloat(item.stock_current) || 0).toLocaleString('id-ID')} ${item.unit || 'unit'}`;
+    }
+
+    const qtyInput = document.getElementById('dist-amount') || document.getElementById('dist-quantity');
     if (qtyInput) {
         qtyInput.max = item.stock_current;
         qtyInput.value = '';
@@ -1107,7 +1154,9 @@ function openDistributeModal(item) {
     }
 
     openModal('modal-distribute');
-    initDistPickerMap();
+    setTimeout(() => {
+        initDistPickerMap();
+    }, 200);
 }
 
 function triggerDistributeFromDetail() {
@@ -1428,14 +1477,16 @@ async function quickStockAdjust(itemId, delta, reason) {
 
 // Kelola Resep Formula Pakan (BOM Dinamis)
 async function openRecipeBuilder(productId, productName) {
-    document.getElementById('builder-product-id').value = productId;
-    document.getElementById('builder-product-name').textContent = productName;
+    const idInput = document.getElementById('builder-product-id');
+    const nameEl = document.getElementById('builder-product-name');
+    if (idInput) idInput.value = productId;
+    if (nameEl) nameEl.textContent = productName;
 
     openModal('modal-recipe-builder');
 
-    const tbody = document.getElementById('recipe-builder-tbody');
-    if (tbody) {
-        tbody.innerHTML = `<tr><td colspan="4" class="py-4 text-center text-xs text-slate-400">Memuat formula bahan baku...</td></tr>`;
+    const container = document.getElementById('recipe-rows-container') || document.getElementById('recipe-builder-tbody');
+    if (container) {
+        container.innerHTML = `<div class="py-4 text-center text-xs text-slate-400">Memuat formula bahan baku...</div>`;
     }
 
     try {
@@ -1453,13 +1504,13 @@ async function openRecipeBuilder(productId, productName) {
         const recData = await recRes.json();
         const currentRecipe = (recData.success && Array.isArray(recData.recipe)) ? recData.recipe : [];
 
-        if (tbody) tbody.innerHTML = '';
+        if (container) container.innerHTML = '';
 
         if (currentRecipe.length === 0) {
-            addRecipeIngredientRow();
+            addRecipeRow();
         } else {
             currentRecipe.forEach(r => {
-                addRecipeIngredientRow(r.raw_material_id, r.amount_per_unit);
+                addRecipeRow(r.raw_material_id, r.amount_per_unit);
             });
         }
     } catch (e) {
@@ -1476,65 +1527,68 @@ function triggerRecipeBuilderFromDetail() {
     openRecipeBuilder(id, name);
 }
 
-function addRecipeIngredientRow(selectedRawId = null, defaultAmount = '') {
-    const tbody = document.getElementById('recipe-builder-tbody');
-    if (!tbody) return;
+function addRecipeRow(selectedRawId = null, defaultAmount = '') {
+    const container = document.getElementById('recipe-rows-container') || document.getElementById('recipe-builder-tbody');
+    if (!container) return;
 
-    const rowIdx = tbody.children.length;
+    const rowIdx = container.children.length;
     let optionsHtml = '<option value="">-- Pilih Bahan Baku --</option>';
 
     availableRawMaterials.forEach(rm => {
         const isSel = (selectedRawId && parseInt(selectedRawId) === parseInt(rm.id)) ? 'selected' : '';
-        optionsHtml += `<option value="${rm.id}" data-unit="${escapeHtml(rm.unit)}" data-stock="${rm.stock_current}" ${isSel}>${escapeHtml(rm.name)} (${rm.stock_current} ${rm.unit})</option>`;
+        optionsHtml += `<option value="${rm.id}" data-unit="${escapeHtml(rm.unit)}" data-stock="${rm.stock_current}" ${isSel}>${escapeHtml(rm.name)} (Stok: ${rm.stock_current} ${rm.unit})</option>`;
     });
 
-    const tr = document.createElement('tr');
-    tr.className = 'border-b border-slate-100 text-xs';
-    tr.innerHTML = `
-        <td class="py-2.5 pr-2">
-            <select name="ingredients[${rowIdx}][raw_material_id]" required onchange="updateRecipeRowUnit(this)" class="w-full px-2.5 py-1.5 border border-slate-300 rounded-lg bg-white text-xs font-semibold text-slate-800">
+    const row = document.createElement('div');
+    row.className = 'recipe-item-row flex flex-col sm:flex-row sm:items-center gap-2.5 p-3 bg-white rounded-xl border border-slate-200 shadow-2xs transition-smooth';
+    row.innerHTML = `
+        <div class="flex-1">
+            <select name="ingredients[${rowIdx}][raw_material_id]" required onchange="updateRecipeRowUnit(this)" class="w-full px-2.5 py-1.5 border border-slate-300 rounded-lg bg-white text-xs font-bold text-slate-800 focus:ring-2 focus:ring-amber-500">
                 ${optionsHtml}
             </select>
-        </td>
-        <td class="py-2.5 px-2 text-center">
-            <div class="flex items-center justify-center space-x-1">
-                <input type="number" step="0.01" min="0.01" name="ingredients[${rowIdx}][amount_per_unit]" value="${defaultAmount}" required placeholder="0.0" class="w-24 px-2 py-1.5 border border-slate-300 rounded-lg text-center font-bold text-xs">
-                <span class="unit-label text-[11px] text-slate-500 font-medium">kg</span>
-            </div>
-        </td>
-        <td class="py-2.5 px-2 text-center text-slate-500 font-mono stock-label">-</td>
-        <td class="py-2.5 pl-2 text-right">
-            <button type="button" onclick="removeRecipeRow(this)" class="p-1.5 text-rose-500 hover:text-white hover:bg-rose-500 rounded-lg transition-smooth" title="Hapus Bahan">
+        </div>
+        <div class="w-full sm:w-36 flex items-center space-x-1.5">
+            <input type="number" step="0.01" min="0.01" name="ingredients[${rowIdx}][amount_per_unit]" value="${defaultAmount}" required placeholder="Takaran" class="w-full px-2 py-1.5 border border-slate-300 rounded-lg text-center font-bold text-xs focus:ring-2 focus:ring-amber-500">
+            <span class="unit-label text-xs text-slate-500 font-bold shrink-0">kg</span>
+        </div>
+        <div class="hidden sm:block w-28 text-center text-slate-500 font-mono text-[11px] stock-label">
+            -
+        </div>
+        <div class="flex justify-end shrink-0">
+            <button type="button" onclick="removeRecipeRow(this)" class="p-1.5 text-rose-500 hover:text-white hover:bg-rose-500 rounded-lg transition-smooth border border-rose-200 hover:border-transparent" title="Hapus Bahan">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
             </button>
-        </td>
+        </div>
     `;
 
-    tbody.appendChild(tr);
+    container.appendChild(row);
 
-    // Update unit dan stock label awal jika sudah ada selected
-    const selectEl = tr.querySelector('select');
+    const selectEl = row.querySelector('select');
     if (selectEl && selectedRawId) {
         updateRecipeRowUnit(selectEl);
     }
 }
 
+function addRecipeIngredientRow(selectedRawId = null, defaultAmount = '') {
+    addRecipeRow(selectedRawId, defaultAmount);
+}
+
 function updateRecipeRowUnit(selectEl) {
-    const tr = selectEl.closest('tr');
-    if (!tr) return;
+    const row = selectEl.closest('.recipe-item-row') || selectEl.closest('tr');
+    if (!row) return;
 
     const opt = selectEl.options[selectEl.selectedIndex];
     const unit = opt ? opt.getAttribute('data-unit') : 'kg';
     const stock = opt ? opt.getAttribute('data-stock') : '-';
 
-    const unitSpan = tr.querySelector('.unit-label');
-    const stockSpan = tr.querySelector('.stock-label');
+    const unitSpan = row.querySelector('.unit-label');
+    const stockSpan = row.querySelector('.stock-label');
 
     if (unitSpan) unitSpan.textContent = unit || 'kg';
-    if (stockSpan) stockSpan.textContent = stock !== null ? `${stock} ${unit}` : '-';
+    if (stockSpan) stockSpan.textContent = stock !== null && stock !== '' ? `${stock} ${unit}` : '-';
 }
 
 function removeRecipeRow(btn) {
-    const tr = btn.closest('tr');
-    if (tr) tr.remove();
+    const row = btn.closest('.recipe-item-row') || btn.closest('tr');
+    if (row) row.remove();
 }

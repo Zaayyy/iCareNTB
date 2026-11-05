@@ -185,17 +185,17 @@ try {
         case 'add_mutation':
             $pdo->beginTransaction();
 
-            $itemId = (int)($_POST['item_id'] ?? 0);
+            $itemId = (int)($_POST['item_id'] ?? $_POST['product_id'] ?? 0);
             $type = strtoupper(trim($_POST['type'] ?? ''));
-            $quantity = (float)($_POST['quantity'] ?? 0);
+            $quantity = (float)($_POST['quantity'] ?? $_POST['amount'] ?? 0);
             $date = trim($_POST['mutation_date'] ?? date('Y-m-d'));
             $officer = trim($_POST['officer_name'] ?? 'Petugas BRMP DIY');
-            $destination = trim($_POST['destination_or_source'] ?? '-');
+            $destination = trim($_POST['destination_or_source'] ?? $_POST['recipient_location'] ?? '-');
             $notes = trim($_POST['notes'] ?? '');
 
             $latitude = (isset($_POST['latitude']) && $_POST['latitude'] !== '') ? (float)$_POST['latitude'] : null;
             $longitude = (isset($_POST['longitude']) && $_POST['longitude'] !== '') ? (float)$_POST['longitude'] : null;
-            $locationName = trim($_POST['location_name'] ?? '');
+            $locationName = trim($_POST['location_name'] ?? $_POST['recipient_location'] ?? '');
             if (empty($locationName) && !empty($destination) && $destination !== '-') {
                 $locationName = $destination;
             }

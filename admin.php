@@ -376,7 +376,7 @@ $metricsBNH = getMetrics($perbenihanList);
                                 <button onclick="openProductionModal(<?= $item['id'] ?>)" class="inline-flex items-center space-x-1 px-2.5 py-1 text-xs font-bold text-amber-900 bg-amber-100 hover:bg-amber-200 rounded-lg transition-smooth border border-amber-300/60 shadow-2xs" title="Catat Produksi Pakan">
                                     <span>🏭 Produksi</span>
                                 </button>
-                                <button onclick='openRecipeBuilder(<?= $item['id'] ?>, "<?= htmlspecialchars(addslashes($item['name'])) ?>")' class="inline-flex items-center space-x-1 px-2 py-1 text-[11px] font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg transition-smooth border border-slate-200" title="Atur Formula Komposisi Bahan Baku">
+                                <button onclick='openRecipeBuilder(<?= (int)$item['id'] ?>, <?= htmlspecialchars(json_encode($item['name']), ENT_QUOTES) ?>)' class="inline-flex items-center space-x-1 px-2 py-1 text-[11px] font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg transition-smooth border border-slate-200" title="Atur Formula Komposisi Bahan Baku">
                                     <span>🧪 Resep</span>
                                 </button>
                             </div>
