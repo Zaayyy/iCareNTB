@@ -1,32 +1,24 @@
 # Rumah Produksi - BRMP D.I. Yogyakarta
 
-Aplikasi web **"Rumah Produksi"** dirancang khusus untuk memonitoring ketersediaan, pergerakan stok, formula produksi pakan, dan pemetaan sebaran benih bersertifikasi pada **Balai Penerapan Standar Instrumen Pertanian / Balai Riset Mutu Pakan (BRMP) Daerah Istimewa Yogyakarta (DIY)**.
+Aplikasi web **"Rumah Produksi"** dirancang khusus untuk memonitoring ketersediaan, pergerakan stok, formula produksi pakan, dan pemetaan sebaran distribusi pada **Balai Penerapan Standar Instrumen Pertanian / Balai Riset Mutu Pakan (BRMP) Daerah Istimewa Yogyakarta (DIY)**.
 
 ---
 
-## 3 Fitur Utama Aplikasi
+## Fitur Utama Aplikasi
 
-### 1. Bahan Baku (Fitur 1)
+### 1. Bahan Baku Pakan
 - **Monitoring Ketersediaan Bahan Baku**: Inventarisasi bahan baku pakan seperti Jagung Pipil Kering Super, Bungkil Kedelai Non-GMO, Dedak Padi Halus Super, Tepung Ikan Murni 60%, Tepung Maggot BSF Kering, Premix Vitamin & Mineral, dan Molase Tetes Tebu.
 - **Spesifikasi Mutu Laboratorium**: Menampilkan kadar air, protein kasar, kandungan serat kasar, serta batas aflatoksin SNI.
 - **Deteksi Buffer Stok Minimum**: Peringatan stok kritis saat persediaan mendekati batas aman produksi.
 
-### 2. Produk (Fitur 2)
+### 2. Pakan Jadi Olahan (Produk)
 - **Katalog Produk Pakan Olahan BRMP DIY**: Pelet Starter Ikan Nila Pro-32, Pelet Apung Grower 2, Finisher Pelet Terapung Super, Pelet Benih Lele D-1, Crumbles Ayam Broiler Starter, Konsentrat Pertumbuhan Domba, dan Silase Tebon Jagung Fermentasi EM4.
 - **Pencatatan Produksi & Bill of Materials (BOM) Otomatis**: Saat mencatat produksi pakan, sistem secara otomatis menghitung dan memotong stok bahan baku terkait sesuai resep formula.
 - **Parameter Kualitas Pakan**: Informasi kadar protein, rasio FCR (*Feed Conversion Ratio*), kestabilan air, dan energi metabolis (ME).
+- **Distribusi Pakan & Peta Sebaran**: Pencatatan penyaluran pakan jadi ke kelompok binaan dan penandaan titik koordinat peta wilayah DIY.
 
-### 3. Stok Perbenihan (Fitur 3)
-- **Katalog Benih Bersertifikasi**:
-  - Kedelai Varietas Dega-1 & Grobogan
-  - Jagung Varietas Jakarin 1 (SS)
-  - Padi Varietas Inpari 31, Inpari 32, Inpari 47 (SS)
-  - DOC Ayam KUB (Balitbangtan) & Benih Ikan Nila Nirwana 3
-- **Fitur Distribusi Benih & Minimap Sebaran**:
-  - Catat penyaluran benih keluar ke kelompok tani.
-  - Penentuan lokasi distribusi manual / klik langsung pada peta wilayah D.I. Yogyakarta.
-  - Setelah diinput, lokasi langsung ditampilkan dalam bentuk minimap beserta titik distribusinya.
-  - Filter peta gabungan vs peta per produk.
+### 3. Log Mutasi & Audit Trail
+- Pencatatan seluruh arus keluar-masuk stok pakan dan bahan baku secara real-time.
 
 ---
 

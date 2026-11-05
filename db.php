@@ -15,7 +15,7 @@ try {
     $pdo->exec("
         CREATE TABLE IF NOT EXISTS inventory_items (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            type TEXT NOT NULL CHECK(type IN ('bahan_baku', 'produk', 'perbenihan')),
+            type TEXT NOT NULL CHECK(type IN ('bahan_baku', 'produk')),
             code TEXT UNIQUE NOT NULL,
             name TEXT NOT NULL,
             category TEXT NOT NULL,
@@ -368,171 +368,6 @@ try {
                 'spec_3_label' => 'Daya Simpan',
                 'spec_3_value' => '6 Bulan Kedap Udara',
                 'description' => 'Silase batang & tongkol jagung muda difermentasi dengan bakteri asam laktat unggul.'
-            ],
-
-            // ==========================================
-            // 3. FITUR STOK PERBENIHAN (Certified Seeds & Breeds)
-            // (100% Identik dengan Gambar Referensi Pengguna)
-            // ==========================================
-            [
-                'type' => 'perbenihan',
-                'code' => 'BNH-KDL-01',
-                'name' => 'Kedelai Varietas Dega-1',
-                'category' => 'Benih Palawija Bersertifikasi',
-                'target_stage' => 'Kelas Benih Pokok (SS)',
-                'unit' => 'kg',
-                'stock_current' => 2000,
-                'stock_minimum' => 500,
-                'storage_location' => 'Gudang Benih Bersertifikasi DIY',
-                'price_per_unit' => 18000,
-                'image_url' => 'https://images.unsplash.com/photo-1586201375761-83865001e31c?w=500&auto=format&fit=crop&q=80',
-                'spec_1_label' => 'Daya Berkecambah',
-                'spec_1_value' => '> 85%',
-                'spec_2_label' => 'Kadar Air Benih',
-                'spec_2_value' => '< 11.0%',
-                'spec_3_label' => 'Potensi Hasil',
-                'spec_3_value' => '3.8 Ton/Ha',
-                'description' => 'Varietas kedelai unggul nasional umur genjah dengan biji bulat seragam berstandar BRMP DIY.'
-            ],
-            [
-                'type' => 'perbenihan',
-                'code' => 'BNH-KDL-02',
-                'name' => 'Kedelai Varietas Grobogan',
-                'category' => 'Benih Palawija Bersertifikasi',
-                'target_stage' => 'Kelas Benih Sebar (ES)',
-                'unit' => 'kg',
-                'stock_current' => 6500,
-                'stock_minimum' => 1000,
-                'storage_location' => 'Gudang Benih Bersertifikasi DIY',
-                'price_per_unit' => 17500,
-                'image_url' => 'https://images.unsplash.com/photo-1586201375761-83865001e31c?w=500&auto=format&fit=crop&q=80',
-                'spec_1_label' => 'Daya Berkecambah',
-                'spec_1_value' => '88%',
-                'spec_2_label' => 'Ukuran Biji',
-                'spec_2_value' => 'Biji Sangat Besar (18 g / 100 biji)',
-                'spec_3_label' => 'Umur Panen',
-                'spec_3_value' => '76 Hari',
-                'description' => 'Varietas kedelai biji besar favorit industri tahu tempe di Daerah Istimewa Yogyakarta.'
-            ],
-            [
-                'type' => 'perbenihan',
-                'code' => 'BNH-JAG-01',
-                'name' => 'Jagung Varietas Jakarin 1 (SS)',
-                'category' => 'Benih Palawija Bersertifikasi',
-                'target_stage' => 'Benih Pokok Bersertifikasi',
-                'unit' => 'kg',
-                'stock_current' => 920,
-                'stock_minimum' => 200,
-                'storage_location' => 'Ruang Benih Palawija',
-                'price_per_unit' => 25000,
-                'image_url' => 'https://images.unsplash.com/photo-1551754655-cd27e38d2076?w=500&auto=format&fit=crop&q=80',
-                'spec_1_label' => 'Kemurnian Benih',
-                'spec_1_value' => '99.5%',
-                'spec_2_label' => 'Daya Tumbuh',
-                'spec_2_value' => '92%',
-                'spec_3_label' => 'Ketahanan',
-                'spec_3_value' => 'Tahan Penyakit Bulai',
-                'description' => 'Varietas jagung bersari bebas berdaya hasil tinggi dan adaptif di lahan kering DIY.'
-            ],
-            [
-                'type' => 'perbenihan',
-                'code' => 'BNH-PDI-01',
-                'name' => 'Padi Varietas Inpari 31 (SS)',
-                'category' => 'Benih Padi Sawah',
-                'target_stage' => 'Kelas Benih Pokok (SS)',
-                'unit' => 'kg',
-                'stock_current' => 18685,
-                'stock_minimum' => 2000,
-                'storage_location' => 'Gudang Benih Padi Utama',
-                'price_per_unit' => 14000,
-                'image_url' => 'https://images.unsplash.com/photo-1509358271058-acd22cc93898?w=500&auto=format&fit=crop&q=80',
-                'spec_1_label' => 'Kemurnian Fisik',
-                'spec_1_value' => '99.8%',
-                'spec_2_label' => 'Daya Berkecambah',
-                'spec_2_value' => '94%',
-                'spec_3_label' => 'Ketahanan Hama',
-                'spec_3_value' => 'Tahan Wereng Batang Coklat (WBC)',
-                'description' => 'Benih padi inbrida bersertifikasi resmi label ungu untuk swasembada pangan DIY.'
-            ],
-            [
-                'type' => 'perbenihan',
-                'code' => 'BNH-PDI-02',
-                'name' => 'Padi Varietas Inpari 32 (SS)',
-                'category' => 'Benih Padi Sawah',
-                'target_stage' => 'Kelas Benih Pokok (SS)',
-                'unit' => 'kg',
-                'stock_current' => 14200,
-                'stock_minimum' => 2000,
-                'storage_location' => 'Gudang Benih Padi Utama',
-                'price_per_unit' => 14500,
-                'image_url' => 'https://images.unsplash.com/photo-1595246140625-573b715d11dc?w=500&auto=format&fit=crop&q=80',
-                'spec_1_label' => 'Kemurnian',
-                'spec_1_value' => '99.7%',
-                'spec_2_label' => 'Rasa Nasi',
-                'spec_2_value' => 'Pulen (Amilosa 21.8%)',
-                'spec_3_label' => 'Ketahanan',
-                'spec_3_value' => 'Tahan Hawar Daun Bakteri (HDB)',
-                'description' => 'Varietas padi sawah favorit petani DIY dengan postur tegak dan rendemen beras tinggi.'
-            ],
-            [
-                'type' => 'perbenihan',
-                'code' => 'BNH-PDI-03',
-                'name' => 'Padi Varietas Inpari 47 (SS)',
-                'category' => 'Benih Padi Sawah',
-                'target_stage' => 'Kelas Benih Pokok (SS)',
-                'unit' => 'kg',
-                'stock_current' => 8450,
-                'stock_minimum' => 1500,
-                'storage_location' => 'Gudang Benih Padi Utama',
-                'price_per_unit' => 14500,
-                'image_url' => 'https://images.unsplash.com/photo-1595246140625-573b715d11dc?w=500&auto=format&fit=crop&q=80',
-                'spec_1_label' => 'Daya Berkecambah',
-                'spec_1_value' => '91%',
-                'spec_2_label' => 'Kadar Air',
-                'spec_2_value' => '11.5%',
-                'spec_3_label' => 'Potensi Hasil',
-                'spec_3_value' => '9.5 Ton/Ha',
-                'description' => 'Varietas padi sawah umur genjah toleran rebah dengan bulir padat bernas.'
-            ],
-            [
-                'type' => 'perbenihan',
-                'code' => 'BNH-AYM-01',
-                'name' => 'DOC Ayam KUB (Balitbangtan)',
-                'category' => 'Bibit Peternakan Bersertifikasi',
-                'target_stage' => 'DOC Umur 1 Hari',
-                'unit' => 'Ekor',
-                'stock_current' => 1500,
-                'stock_minimum' => 300,
-                'storage_location' => 'Hatchery Unggas BRMP DIY',
-                'price_per_unit' => 9500,
-                'image_url' => 'https://images.unsplash.com/photo-1548550023-2bdb3c5beed7?w=500&auto=format&fit=crop&q=80',
-                'spec_1_label' => 'Produksi Telur',
-                'spec_1_value' => '160 - 180 Butir/Tahun',
-                'spec_2_label' => 'Karakteristik',
-                'spec_2_value' => 'Sifat Mengeram Rendah (< 10%)',
-                'spec_3_label' => 'Sertifikasi',
-                'spec_3_value' => 'Bibit Resmi Litbang Pertanian',
-                'description' => 'Day Old Chick Ayam Kampung Unggul Balitbangtan hasil seleksi genetik unggul.'
-            ],
-            [
-                'type' => 'perbenihan',
-                'code' => 'BNH-IKN-01',
-                'name' => 'Benih Ikan Nila Nirwana 3',
-                'category' => 'Benih Perikanan Bersertifikasi',
-                'target_stage' => 'Ukuran 3 - 5 cm',
-                'unit' => 'Ekor',
-                'stock_current' => 45000,
-                'stock_minimum' => 10000,
-                'storage_location' => 'Balai Benih Ikan Air Tawar DIY',
-                'price_per_unit' => 250,
-                'image_url' => 'https://images.unsplash.com/photo-1522069169874-c58ec4b76be5?w=500&auto=format&fit=crop&q=80',
-                'spec_1_label' => 'Tingkat Kelangsungan Hidup',
-                'spec_1_value' => '> 95%',
-                'spec_2_label' => 'Laju Pertumbuhan',
-                'spec_2_value' => 'Cepat (Panen 3.5 Bulan)',
-                'spec_3_label' => 'Surat Karantina',
-                'spec_3_value' => 'Bebas Hama Penyakit Ikan (SKAI)',
-                'description' => 'Benih ikan nila unggul bersertifikasi mutu SNI untuk kelompok pembudidaya mina DIY.'
             ]
         ];
 
@@ -685,7 +520,7 @@ try {
         }
     }
 
-    // Seed sample seed distribution points if not exist
+    // Seed sample product distribution points if not exist
     $distCount = $pdo->query("SELECT COUNT(*) FROM inventory_mutations WHERE latitude IS NOT NULL")->fetchColumn();
     if ($distCount == 0) {
         $getId = function($code) use ($pdo) {
@@ -696,64 +531,52 @@ try {
 
         $sampleDist = [
             [
-                'item_id' => $getId('BNH-KDL-01'),
+                'item_id' => $getId('PRD-NIL-01'),
                 'type' => 'OUT',
-                'quantity' => 500,
+                'quantity' => 15,
                 'mutation_date' => date('Y-m-d', strtotime('-4 days')),
                 'officer_name' => 'Agus Prayitno (BRMP DIY)',
-                'destination_or_source' => 'Kelompok Tani Sedyo Makmur, Nanggulan',
-                'latitude' => -7.7654,
-                'longitude' => 110.2154,
-                'location_name' => 'Kec. Nanggulan, Kab. Kulon Progo',
-                'notes' => 'Penyaluran benih kedelai bersertifikasi program swasembada pangan'
-            ],
-            [
-                'item_id' => $getId('BNH-PDI-01'),
-                'type' => 'OUT',
-                'quantity' => 1200,
-                'mutation_date' => date('Y-m-d', strtotime('-3 days')),
-                'officer_name' => 'Siti Nurhaliza (BRMP DIY)',
-                'destination_or_source' => 'Gapoktan Tani Makmur, Imogiri',
+                'destination_or_source' => 'Kelompok Pembudidaya Mina Lestari, Bantul',
                 'latitude' => -7.9250,
                 'longitude' => 110.3800,
                 'location_name' => 'Kec. Imogiri, Kab. Bantul',
-                'notes' => 'Distribusi benih padi inbrida Inpari 31 tahan hama wereng'
+                'notes' => 'Penyaluran bantuan Pelet Starter Ikan Nila Pro-32 untuk kelompok binaan'
             ],
             [
-                'item_id' => $getId('BNH-KDL-02'),
+                'item_id' => $getId('PRD-AYM-01'),
                 'type' => 'OUT',
-                'quantity' => 1000,
-                'mutation_date' => date('Y-m-d', strtotime('-2 days')),
-                'officer_name' => 'Eko Prasetyo (BRMP DIY)',
-                'destination_or_source' => 'Kelompok Tani Kedelai Berkah, Semin',
-                'latitude' => -7.8650,
-                'longitude' => 110.7420,
-                'location_name' => 'Kec. Semin, Kab. Gunungkidul',
-                'notes' => 'Penyaluran varietas kedelai Grobogan biji besar binaan BRMP'
-            ],
-            [
-                'item_id' => $getId('BNH-IKN-01'),
-                'type' => 'OUT',
-                'quantity' => 10000,
-                'mutation_date' => date('Y-m-d', strtotime('-1 days')),
-                'officer_name' => 'Bambang S. (BRMP DIY)',
-                'destination_or_source' => 'Kelompok Pembudidaya Mina Kalasan',
-                'latitude' => -7.7680,
-                'longitude' => 110.4680,
-                'location_name' => 'Kec. Kalasan, Kab. Sleman',
-                'notes' => 'Penyaluran benih ikan nila unggul Nirwana ukuran 3-5 cm'
-            ],
-            [
-                'item_id' => $getId('BNH-AYM-01'),
-                'type' => 'OUT',
-                'quantity' => 400,
-                'mutation_date' => date('Y-m-d'),
-                'officer_name' => 'Bambang S. (BRMP DIY)',
-                'destination_or_source' => 'Kelompok Peternak Ayam Mandiri, Pakem',
+                'quantity' => 20,
+                'mutation_date' => date('Y-m-d', strtotime('-3 days')),
+                'officer_name' => 'Siti Nurhaliza (BRMP DIY)',
+                'destination_or_source' => 'Kelompok Peternak Ayam Makmur, Sleman',
                 'latitude' => -7.6650,
                 'longitude' => 110.4180,
                 'location_name' => 'Kec. Pakem, Kab. Sleman',
-                'notes' => 'Droping DOC Ayam KUB bersertifikasi untuk demplot peternakan rakyat'
+                'notes' => 'Distribusi Crumbles Ayam Broiler Starter program ketahanan pakan'
+            ],
+            [
+                'item_id' => $getId('PRD-DMB-01'),
+                'type' => 'OUT',
+                'quantity' => 10,
+                'mutation_date' => date('Y-m-d', strtotime('-2 days')),
+                'officer_name' => 'Eko Prasetyo (BRMP DIY)',
+                'destination_or_source' => 'Kelompok Ternak Domba Berkah, Gunungkidul',
+                'latitude' => -7.8650,
+                'longitude' => 110.7420,
+                'location_name' => 'Kec. Semin, Kab. Gunungkidul',
+                'notes' => 'Penyaluran Konsentrat Pertumbuhan Domba sentra peternakan rakyat'
+            ],
+            [
+                'item_id' => $getId('PRD-NIL-02'),
+                'type' => 'OUT',
+                'quantity' => 25,
+                'mutation_date' => date('Y-m-d', strtotime('-1 days')),
+                'officer_name' => 'Bambang S. (BRMP DIY)',
+                'destination_or_source' => 'Kelompok Pembudidaya Mina Kalasan, Sleman',
+                'latitude' => -7.7680,
+                'longitude' => 110.4680,
+                'location_name' => 'Kec. Kalasan, Kab. Sleman',
+                'notes' => 'Penyaluran Pelet Apung Grower 2 untuk pembudidaya mina DIY'
             ]
         ];
 

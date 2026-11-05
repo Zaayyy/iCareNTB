@@ -1,4 +1,4 @@
-// assets/js/app.js - Rumah Produksi BRMP DIY (3 Fitur: Bahan Baku, Produk, Stok Perbenihan)
+// assets/js/app.js - Rumah Produksi BRMP DIY (Manajemen Pakan Jadi & Bahan Baku)
 
 let currentDetailItem = null;
 let currentProductRecipe = [];
@@ -55,7 +55,6 @@ function initTabs() {
     const sections = {
         'tab-produk': document.getElementById('section-produk'),
         'tab-bahan-baku': document.getElementById('section-bahan-baku'),
-        'tab-perbenihan': document.getElementById('section-perbenihan'),
         'tab-mutasi': document.getElementById('section-mutasi')
     };
 
@@ -88,11 +87,6 @@ function initTabs() {
                 if (sections[key]) {
                     if (key === target) {
                         sections[key].classList.remove('hidden');
-                        if (key === 'tab-perbenihan' && distributionMap) {
-                            setTimeout(() => {
-                                distributionMap.invalidateSize();
-                            }, 150);
-                        }
                     } else {
                         sections[key].classList.add('hidden');
                     }
@@ -130,7 +124,6 @@ function setupEventHandlers() {
     // Setup filter for each section
     setupSectionFilters('bahan-baku');
     setupSectionFilters('produk');
-    setupSectionFilters('perbenihan');
 
     // Form Add Item
     const formAddItem = document.getElementById('form-add-item');
@@ -408,8 +401,7 @@ function setupSectionFilters(sectionKey) {
 
 const activeCategory = {
     'bahan-baku': '',
-    'produk': '',
-    'perbenihan': ''
+    'produk': ''
 };
 
 // Open HTML5 Dialog Modal
@@ -476,10 +468,10 @@ function openDetailModal(item) {
         }
     }
 
-    // If it's seed or finished product, show "Lihat Peta Sebaran Produk" button
+    // If it's a finished product, show "Lihat Peta Sebaran Produk" button
     const btnMapDetail = document.getElementById('btn-map-from-detail');
     if (btnMapDetail) {
-        if (item.type === 'produk' || item.type === 'perbenihan') {
+        if (item.type === 'produk') {
             btnMapDetail.classList.remove('hidden');
         } else {
             btnMapDetail.classList.add('hidden');
@@ -684,7 +676,7 @@ function initDistributionMinimap() {
 
 async function loadDistributionLocations() {
     try {
-        const res = await fetch('api.php?action=get_locations&type=perbenihan');
+        const res = await fetch('api.php?action=get_locations&type=produk');
         const data = await res.json();
         if (data.success && Array.isArray(data.locations)) {
             distributionLocationsData = data.locations;
@@ -692,7 +684,7 @@ async function loadDistributionLocations() {
             renderDistributionList(distributionLocationsData);
         }
     } catch (e) {
-        console.error('Gagal memuat titik distribusi perbenihan:', e);
+        console.error('Gagal memuat titik distribusi:', e);
     }
 }
 
@@ -803,9 +795,6 @@ function renderDistributionList(locations) {
 function panToLocation(mutationId, lat, lng) {
     if (!distributionMap) return;
 
-    // Switch to Perbenihan tab if not active
-    switchToPerbenihanTab();
-
     distributionMap.flyTo([lat, lng], 13, {
         animate: true,
         duration: 1.2
@@ -820,7 +809,6 @@ function panToLocation(mutationId, lat, lng) {
 }
 
 function focusMinimap() {
-    switchToPerbenihanTab();
     const mapEl = document.getElementById('container-minimap');
     if (mapEl) {
         mapEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -828,7 +816,6 @@ function focusMinimap() {
 }
 
 function focusMinimapByItemId(itemId) {
-    switchToPerbenihanTab();
     const targetLoc = distributionLocationsData.find(l => parseInt(l.item_id) === parseInt(itemId));
 
     const mapEl = document.getElementById('container-minimap');
@@ -841,7 +828,7 @@ function focusMinimapByItemId(itemId) {
             panToLocation(targetLoc.id, targetLoc.latitude, targetLoc.longitude);
         }, 400);
     } else {
-        showToast('Belum ada riwayat koordinat sebaran untuk varietas ini.', 'error');
+        showToast('Belum ada riwayat koordinat sebaran untuk produk ini.', 'error');
     }
 }
 
@@ -862,13 +849,6 @@ function resetMinimapView() {
         }
     }
     distributionMap.flyTo([-7.801389, 110.364444], 10);
-}
-
-function switchToPerbenihanTab() {
-    const perbenihanBtn = document.querySelector('[data-target="tab-perbenihan"]');
-    if (perbenihanBtn) {
-        perbenihanBtn.click();
-    }
 }
 
 // Preset Wilayah DIY di Modal Mutasi

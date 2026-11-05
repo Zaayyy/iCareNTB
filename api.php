@@ -521,13 +521,11 @@ try {
         case 'get_stats':
             $statsBahanBaku = $pdo->query("SELECT COUNT(*) as total, SUM(CASE WHEN stock_current <= stock_minimum THEN 1 ELSE 0 END) as critical FROM inventory_items WHERE type = 'bahan_baku'")->fetch();
             $statsProduk = $pdo->query("SELECT COUNT(*) as total, SUM(CASE WHEN stock_current <= stock_minimum THEN 1 ELSE 0 END) as critical FROM inventory_items WHERE type = 'produk'")->fetch();
-            $statsPerbenihan = $pdo->query("SELECT COUNT(*) as total, SUM(CASE WHEN stock_current <= stock_minimum THEN 1 ELSE 0 END) as critical FROM inventory_items WHERE type = 'perbenihan'")->fetch();
 
             echo json_encode([
                 'success' => true,
                 'bahan_baku' => $statsBahanBaku,
-                'produk' => $statsProduk,
-                'perbenihan' => $statsPerbenihan
+                'produk' => $statsProduk
             ]);
             break;
 

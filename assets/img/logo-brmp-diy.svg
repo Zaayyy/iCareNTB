@@ -73,7 +73,7 @@
 
     <!-- Subtitle: Rumah Produksi & Sertifikasi Benih Unggul -->
     <text x="0" y="80" font-family="system-ui, -apple-system, sans-serif" font-size="13" font-weight="600" fill="#93c5fd" opacity="0.95" letter-spacing="0.2">
-      <tspan fill="#e2e8f0">Rumah Produksi</tspan> &bull; <tspan fill="#a7f3d0">Bahan Baku &bull; Produk &bull; Stok Perbenihan</tspan>
+      <tspan fill="#e2e8f0">Rumah Produksi</tspan> &bull; <tspan fill="#a7f3d0">Bahan Baku &bull; Pakan Jadi</tspan>
     </text>
 
     <!-- Quality Accreditation Indicator Pill -->

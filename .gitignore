@@ -6,3 +6,6 @@ Thumbs.db
 # Scratch directory
 scratch/
 
+# Database backups
+data/*backup*.db
+

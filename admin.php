@@ -9,12 +9,10 @@ require_admin_login();
 // Fetch items for each feature
 $bahanBakuList = $pdo->query("SELECT * FROM inventory_items WHERE type = 'bahan_baku' ORDER BY id ASC")->fetchAll();
 $produkList = $pdo->query("SELECT * FROM inventory_items WHERE type = 'produk' ORDER BY id ASC")->fetchAll();
-$perbenihanList = $pdo->query("SELECT * FROM inventory_items WHERE type = 'perbenihan' ORDER BY id ASC")->fetchAll();
 
 // Categories for filter pills
 $catBahanBaku = array_unique(array_column($bahanBakuList, 'category'));
 $catProduk = array_unique(array_column($produkList, 'category'));
-$catPerbenihan = array_unique(array_column($perbenihanList, 'category'));
 
 // All items for mutation dropdown
 $allItems = $pdo->query("SELECT id, name, code, unit, stock_current, type FROM inventory_items ORDER BY type, name")->fetchAll();
@@ -42,7 +40,6 @@ function getMetrics($list) {
 
 $metricsBB = getMetrics($bahanBakuList);
 $metricsPRD = getMetrics($produkList);
-$metricsBNH = getMetrics($perbenihanList);
 ?>
 <!DOCTYPE html>
 <html lang="id">
@@ -161,7 +158,7 @@ $metricsBNH = getMetrics($perbenihanList);
         <!-- ============================================== -->
         <!-- MONITORING METRICS BAR (SEMUA FITUR) -->
         <!-- ============================================== -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             <!-- Metric 1: Bahan Baku -->
             <div class="bg-white rounded-3xl p-5 border border-slate-100 shadow-[0_4px_25px_rgba(0,0,0,0.03)] flex items-center justify-between">
                 <div>
@@ -190,24 +187,10 @@ $metricsBNH = getMetrics($perbenihanList);
                 </div>
             </div>
 
-            <!-- Metric 3: Stok Perbenihan -->
+            <!-- Metric 3: Aktivitas Mutasi -->
             <div class="bg-white rounded-3xl p-5 border border-slate-100 shadow-[0_4px_25px_rgba(0,0,0,0.03)] flex items-center justify-between">
                 <div>
-                    <span class="text-xs font-bold text-slate-500 uppercase tracking-wider block">3. Stok Perbenihan</span>
-                    <span class="text-2xl font-black text-slate-900 mt-1 block"><?= $metricsBNH['total'] ?> <span class="text-xs font-semibold text-slate-500">Varietas Benih</span></span>
-                    <span class="text-[11px] font-bold text-emerald-600 mt-0.5 block">
-                        Standar Sertifikasi Mutu SNI
-                    </span>
-                </div>
-                <div class="w-12 h-12 rounded-2xl bg-teal-50 text-teal-700 flex items-center justify-center font-bold text-xl shrink-0 border border-teal-100">
-                    🌱
-                </div>
-            </div>
-
-            <!-- Metric 4: Aktivitas Mutasi -->
-            <div class="bg-white rounded-3xl p-5 border border-slate-100 shadow-[0_4px_25px_rgba(0,0,0,0.03)] flex items-center justify-between">
-                <div>
-                    <span class="text-xs font-bold text-slate-500 uppercase tracking-wider block">4. Total Transaksi Mutasi</span>
+                    <span class="text-xs font-bold text-slate-500 uppercase tracking-wider block">3. Total Transaksi Mutasi</span>
                     <span class="text-2xl font-black text-slate-900 mt-1 block"><?= count($mutations) ?> <span class="text-xs font-semibold text-slate-500">Catatan Terkini</span></span>
                     <span class="text-[11px] font-bold text-slate-600 mt-0.5 block">
                         Audit trail otomatis sistem
@@ -220,7 +203,7 @@ $metricsBNH = getMetrics($perbenihanList);
         </div>
 
         <!-- ============================================== -->
-        <!-- NAVIGASI TAB KELOLA ADMIN (5 MENU LENGKAP) -->
+        <!-- NAVIGASI TAB KELOLA ADMIN (MENU LENGKAP) -->
         <!-- ============================================== -->
         <nav class="bg-white/90 backdrop-blur-md p-1.5 rounded-full border border-slate-200/80 shadow-[0_2px_15px_rgba(0,0,0,0.04)] flex flex-wrap items-center justify-between gap-1.5 no-print" aria-label="Menu Admin">
             <div class="flex flex-wrap items-center gap-1.5">
@@ -236,15 +219,9 @@ $metricsBNH = getMetrics($perbenihanList);
                     <span class="text-xs px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 font-bold"><?= $metricsBB['total'] ?></span>
                 </button>
 
-                <!-- Tab 3: Stok Perbenihan -->
-                <button data-target="tab-perbenihan" class="feature-tab-btn px-5 py-2.5 rounded-full font-bold text-xs sm:text-sm bg-transparent text-slate-600 hover:text-emerald-800 hover:bg-slate-100/70 flex items-center space-x-2 transition-smooth">
-                    <span>🌱 3. Stok Perbenihan</span>
-                    <span class="text-xs px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 font-bold"><?= $metricsBNH['total'] ?></span>
-                </button>
-
-                <!-- Tab 4: Log Mutasi -->
+                <!-- Tab 3: Log Mutasi -->
                 <button data-target="tab-mutasi" class="feature-tab-btn px-5 py-2.5 rounded-full font-bold text-xs sm:text-sm bg-transparent text-slate-600 hover:text-emerald-800 hover:bg-slate-100/70 flex items-center space-x-2 transition-smooth">
-                    <span>📋 4. Log Mutasi & Audit</span>
+                    <span>📋 3. Log Mutasi & Audit</span>
                     <span class="text-xs px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 font-bold"><?= count($mutations) ?></span>
                 </button>
             </div>
@@ -585,228 +562,7 @@ $metricsBNH = getMetrics($perbenihanList);
 
 
         <!-- ======================================================== -->
-        <!-- TAB 3: KELOLA STOK PERBENIHAN (CRUD & DISTRIBUSI MINIMAP) -->
-        <!-- ======================================================== -->
-        <section id="section-perbenihan" class="hidden space-y-6">
-            <!-- Header Section -->
-            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pt-1">
-                <div>
-                    <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">Kelola Stok Perbenihan Bersertifikasi</h2>
-                    <p class="text-xs sm:text-sm text-slate-500 mt-1 max-w-2xl leading-relaxed">
-                        Katalog resmi varietas benih unggul bersertifikasi BRMP DIY. Lengkap dengan pencatatan distribusi dan penandaan titik lokasi minimap.
-                    </p>
-                </div>
-                <div class="flex items-center space-x-3 shrink-0">
-                    <button onclick="focusMinimap()" class="inline-flex items-center space-x-1.5 px-4 py-2.5 rounded-full border border-emerald-300 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 text-xs sm:text-sm font-bold shadow-xs transition-smooth">
-                        <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                        </svg>
-                        <span>Lihat Peta Sebaran</span>
-                    </button>
-                    <button onclick="refreshData()" class="inline-flex items-center space-x-2 px-4 py-2.5 rounded-full border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs sm:text-sm font-semibold shadow-xs transition-smooth">
-                        <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                        </svg>
-                        <span>Segarkan Data</span>
-                    </button>
-                    <button onclick="openAddModalWithType('perbenihan')" class="inline-flex items-center space-x-1.5 px-5 py-2.5 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white text-xs sm:text-sm font-semibold shadow-xs transition-smooth">
-                        <span>+ Tambah Varietas Benih</span>
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                        </svg>
-                    </button>
-                </div>
-            </div>
-
-            <!-- MINIMAP SEBARAN DISTRIBUSI -->
-            <div id="container-minimap" class="bg-white rounded-3xl p-6 border border-slate-100 shadow-[0_4px_25px_rgba(0,0,0,0.03)] transition-all">
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-slate-100 gap-3">
-                    <div class="flex items-center space-x-3">
-                        <div class="w-10 h-10 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center border border-emerald-100/80 shrink-0">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"></path>
-                            </svg>
-                        </div>
-                        <div>
-                            <div class="flex items-center space-x-2">
-                                <h3 class="text-base font-extrabold text-slate-800">Minimap Sebaran Distribusi BRMP DIY</h3>
-                                <span class="text-[10px] uppercase font-bold tracking-wider bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full">D.I. Yogyakarta</span>
-                            </div>
-                            <p class="text-xs text-slate-500 mt-0.5">Pemantauan titik penyaluran produk pakan & stok benih ke kelompok binaan</p>
-                        </div>
-                    </div>
-                    <div class="flex flex-wrap items-center gap-2">
-                        <div class="relative">
-                            <select id="minimap-product-filter" onchange="filterMinimapByProduct(this.value)" class="text-xs font-bold bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-700 rounded-full px-3.5 py-1.5 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-smooth">
-                                <option value="">🌐 Semua Komoditas (Peta Gabungan)</option>
-                                <optgroup label="Stok Perbenihan (Benih & Bibit)">
-                                    <?php foreach ($perbenihanList as $pb): ?>
-                                    <option value="<?= $pb['id'] ?>">🌱 <?= htmlspecialchars($pb['name']) ?></option>
-                                    <?php endforeach; ?>
-                                </optgroup>
-                                <optgroup label="Produk Pakan Olahan BRMP">
-                                    <?php foreach ($produkList as $pr): ?>
-                                    <option value="<?= $pr['id'] ?>">📦 <?= htmlspecialchars($pr['name']) ?></option>
-                                    <?php endforeach; ?>
-                                </optgroup>
-                            </select>
-                        </div>
-                        <span id="badge-total-titik" class="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-100">
-                            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping inline-block"></span>
-                            <span id="label-count-titik">Memuat Titik...</span>
-                        </span>
-                        <button onclick="resetMinimapView()" class="px-3 py-1 text-xs font-semibold text-slate-600 hover:text-emerald-700 bg-slate-50 hover:bg-slate-100 rounded-full border border-slate-200 transition-smooth">
-                            Reset Posisi
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Grid Peta & List Lokasi -->
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-5 pt-4">
-                    <div class="lg:col-span-2 relative">
-                        <div id="distribution-minimap" class="w-full h-[320px] sm:h-[360px] rounded-2xl overflow-hidden border border-slate-200 z-10 shadow-inner"></div>
-                        <div class="absolute bottom-3 left-3 z-[400] bg-white/95 backdrop-blur-xs px-3 py-1.5 rounded-xl border border-slate-200/90 text-[11px] text-slate-600 shadow-sm flex items-center space-x-2">
-                            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block"></span>
-                            <span class="font-medium">Peta Sebaran Minimalis &bull; Klik titik untuk info rincian</span>
-                        </div>
-                    </div>
-
-                    <div class="flex flex-col h-[320px] sm:h-[360px]">
-                        <div class="text-xs font-bold text-slate-700 mb-2 flex items-center justify-between">
-                            <span>Titik Distribusi Terakhir</span>
-                            <span class="text-[10px] text-slate-400 font-normal">Klik untuk zoom lokasi</span>
-                        </div>
-                        <div id="distribution-points-list" class="overflow-y-auto space-y-2 pr-1 flex-1 custom-scroll">
-                            <div class="text-xs text-slate-400 py-6 text-center">Memuat daftar lokasi...</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Cards Grid Perbenihan (CRUD Penuh) -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 pt-2">
-                <?php foreach ($perbenihanList as $item): 
-                    $isCritical = ($item['stock_current'] <= $item['stock_minimum']);
-                ?>
-                <div class="item-card-perbenihan bg-white rounded-3xl p-5 border border-slate-200/90 shadow-[0_4px_20px_rgba(0,0,0,0.03)] hover:border-emerald-300 hover:shadow-[0_16px_32px_rgba(5,150,105,0.08)] item-card-hover flex flex-col justify-between group transition-all"
-                     data-name="<?= htmlspecialchars($item['name']) ?>"
-                     data-code="<?= htmlspecialchars($item['code']) ?>"
-                     data-category="<?= htmlspecialchars($item['category']) ?>"
-                     data-critical="<?= $isCritical ? '1' : '0' ?>">
-                    <div>
-                        <!-- Product Image Area with Admin Quick Action Badges -->
-                        <div class="h-44 w-full bg-linear-to-b from-slate-50 to-slate-100/70 rounded-2xl flex items-center justify-center p-3 mb-3.5 overflow-hidden relative border border-slate-100 group-hover:border-slate-200 transition-colors">
-                            <img src="<?= htmlspecialchars($item['image_url']) ?>" 
-                                 alt="<?= htmlspecialchars($item['name']) ?>" 
-                                 class="max-h-full max-w-full object-contain rounded-xl transition-transform duration-300 group-hover:scale-105"
-                                 loading="lazy">
-
-                            <!-- Top Badges: Edit/Delete on Left, Code on Right -->
-                            <div class="absolute top-2.5 left-2.5 flex items-center space-x-1 bg-white/90 backdrop-blur-md p-1 rounded-xl shadow-xs border border-slate-200/70 opacity-90 group-hover:opacity-100 transition-opacity">
-                                <button type="button" onclick='event.stopPropagation(); openEditModal(<?= json_encode($item) ?>)' class="p-1 hover:bg-slate-100 text-slate-600 hover:text-blue-600 rounded-lg transition-smooth" title="Edit Data Varietas">
-                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
-                                </button>
-                                <span class="w-px h-3 bg-slate-200"></span>
-                                <button type="button" onclick='event.stopPropagation(); confirmDeleteItem(<?= $item['id'] ?>, "<?= htmlspecialchars(addslashes($item['name'])) ?>")' class="p-1 hover:bg-rose-50 text-slate-600 hover:text-rose-600 rounded-lg transition-smooth" title="Hapus Varietas">
-                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
-                                </button>
-                            </div>
-
-                            <span class="absolute top-2.5 right-2.5 bg-slate-900/80 backdrop-blur-md text-[10px] font-mono text-white font-bold px-2 py-0.5 rounded-lg shadow-xs">
-                                <?= htmlspecialchars($item['code']) ?>
-                            </span>
-
-                            <?php if (!empty($item['category'])): ?>
-                            <span class="absolute bottom-2.5 left-2.5 bg-white/90 backdrop-blur-md text-[10px] font-bold text-slate-700 px-2.5 py-0.5 rounded-full shadow-2xs border border-slate-200/80">
-                                <?= htmlspecialchars($item['category']) ?>
-                            </span>
-                            <?php endif; ?>
-                        </div>
-
-                        <!-- Status Badge -->
-                        <div class="flex items-center justify-between">
-                            <?php if ($isCritical): ?>
-                            <span class="inline-flex items-center space-x-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-rose-50 text-rose-700 border border-rose-200/70 shadow-2xs">
-                                <span class="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse"></span>
-                                <span>Stok Kritis</span>
-                            </span>
-                            <?php else: ?>
-                            <span class="inline-flex items-center space-x-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200/70 shadow-2xs">
-                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                                <span>Tersedia</span>
-                            </span>
-                            <?php endif; ?>
-
-                            <span class="text-[11px] font-semibold text-slate-400">
-                                Min: <?= number_format($item['stock_minimum'], 0, ',', '.') ?> <?= htmlspecialchars($item['unit']) ?>
-                            </span>
-                        </div>
-
-                        <!-- Title -->
-                        <h3 class="text-[15px] font-black text-slate-900 mt-2 line-clamp-1 group-hover:text-emerald-700 transition-smooth" title="<?= htmlspecialchars($item['name']) ?>">
-                            <?= htmlspecialchars($item['name']) ?>
-                        </h3>
-
-                        <!-- Spesifikasi Parameter Mutu Benih -->
-                        <div class="mt-2 py-1.5 px-2.5 bg-slate-50/80 rounded-xl border border-slate-100 flex items-center justify-between text-[11px] text-slate-600">
-                            <div>
-                                <span class="text-slate-400 block text-[9px] uppercase font-bold tracking-wider"><?= htmlspecialchars($item['spec_1_label'] ?: 'Kemurnian') ?></span>
-                                <span class="font-black text-slate-800"><?= htmlspecialchars($item['spec_1_value'] ?: '-') ?></span>
-                            </div>
-                            <div class="text-right">
-                                <span class="text-slate-400 block text-[9px] uppercase font-bold tracking-wider"><?= htmlspecialchars($item['spec_2_label'] ?: 'Daya Tumbuh') ?></span>
-                                <span class="font-black text-slate-800"><?= htmlspecialchars($item['spec_2_value'] ?: '-') ?></span>
-                            </div>
-                        </div>
-
-                        <!-- Stock Card Container with Integrated Stepper -->
-                        <div class="bg-slate-50/80 rounded-2xl p-2.5 border border-slate-100 flex items-center justify-between mt-2.5">
-                            <div>
-                                <span class="text-[9px] uppercase font-bold text-slate-400 block tracking-wider">Stok Gudang</span>
-                                <span id="card-stock-<?= $item['id'] ?>" class="font-black text-emerald-700 text-sm">
-                                    <?= number_format($item['stock_current'], 0, ',', '.') ?> <?= htmlspecialchars($item['unit']) ?>
-                                </span>
-                            </div>
-                            <div class="inline-flex items-center bg-white rounded-xl p-0.5 border border-slate-200 shadow-2xs" onclick="event.stopPropagation()">
-                                <button type="button" onclick="quickStockAdjust(<?= $item['id'] ?>, -50, 'Pengurangan 50 <?= $item['unit'] ?>')" class="w-6 h-6 flex items-center justify-center rounded-lg hover:bg-rose-50 text-slate-500 hover:text-rose-600 font-black text-xs transition-smooth" title="Kurang 50">-</button>
-                                <span class="w-px h-3 bg-slate-200"></span>
-                                <button type="button" onclick="quickStockAdjust(<?= $item['id'] ?>, 50, 'Penambahan 50 <?= $item['unit'] ?>')" class="w-6 h-6 flex items-center justify-center rounded-lg hover:bg-emerald-50 text-slate-500 hover:text-emerald-700 font-black text-xs transition-smooth" title="Tambah 50">+</button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Action Buttons Section -->
-                    <div class="mt-4 pt-3 border-t border-slate-100 space-y-2">
-                        <div class="grid grid-cols-2 gap-2">
-                            <button type="button" onclick='openDistributeModal(<?= json_encode($item) ?>)' class="inline-flex items-center justify-center space-x-1.5 py-2 px-3 text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 rounded-xl shadow-xs transition-smooth" title="Distribusikan Benih & Tandai Lokasi">
-                                <span>📦 Salurkan</span>
-                            </button>
-                            <button type="button" onclick='openProductMapModal(<?= json_encode($item) ?>)' class="inline-flex items-center justify-center space-x-1.5 py-2 px-2.5 text-xs font-bold text-slate-700 hover:text-emerald-800 bg-slate-50 hover:bg-emerald-50 rounded-xl border border-slate-200 hover:border-emerald-300 transition-smooth" title="Lihat Titik Sebaran di Minimap">
-                                <span>📍 Peta Sebaran</span>
-                            </button>
-                        </div>
-                        <button type="button" onclick='openDetailModal(<?= json_encode($item) ?>)' class="w-full inline-flex items-center justify-center space-x-1 text-xs font-bold text-slate-500 hover:text-emerald-700 py-1 transition-smooth cursor-pointer group/link">
-                            <span>Lihat Detail Varietas</span>
-                            <svg class="w-3.5 h-3.5 transition-transform duration-200 group-hover/link:translate-x-1 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                            </svg>
-                        </button>
-                    </div>
-                </div>
-                <?php endforeach; ?>
-            </div>
-
-            <!-- Empty Search State -->
-            <div id="no-results-perbenihan" class="hidden text-center py-16 bg-white rounded-3xl border border-slate-100 shadow-sm">
-                <h3 class="text-base font-bold text-slate-800">Tidak ada benih yang cocok</h3>
-                <p class="text-xs text-slate-500 mt-1">Coba sesuaikan kata kunci pencarian atau pilih kategori lain.</p>
-            </div>
-        </section>
-
-
-        <!-- ======================================================== -->
-        <!-- TAB 4: LOG MUTASI LENGKAP & AUDIT TRAIL -->
+        <!-- TAB 3: LOG MUTASI LENGKAP & AUDIT TRAIL -->
         <!-- ======================================================== -->
         <section id="section-mutasi" class="hidden space-y-6">
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-1">
@@ -848,7 +604,7 @@ $metricsBNH = getMetrics($perbenihanList);
                                 <td class="py-3.5 px-4 font-bold text-slate-900"><?= htmlspecialchars($m['item_name']) ?> <span class="text-[10px] text-slate-400 font-mono">(<?= htmlspecialchars($m['item_code']) ?>)</span></td>
                                 <td class="py-3.5 px-4">
                                     <span class="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase
-                                        <?= $m['item_type'] === 'produk' ? 'bg-amber-100 text-amber-800' : ($m['item_type'] === 'perbenihan' ? 'bg-teal-100 text-teal-800' : 'bg-emerald-100 text-emerald-800') ?>">
+                                        <?= $m['item_type'] === 'produk' ? 'bg-amber-100 text-amber-800' : 'bg-emerald-100 text-emerald-800' ?>">
                                         <?= htmlspecialchars(str_replace('_', ' ', $m['item_type'])) ?>
                                     </span>
                                 </td>
@@ -1199,7 +955,7 @@ $metricsBNH = getMetrics($perbenihanList);
         </div>
     </dialog>
 
-    <!-- Modal 5: Tambah Item Baru (Bahan Baku / Produk / Perbenihan) -->
+    <!-- Modal 5: Tambah Item Baru (Bahan Baku / Produk Pakan Jadi) -->
     <dialog id="modal-add-item" class="w-full max-w-lg bg-white p-6 rounded-3xl shadow-2xl">
         <div class="flex items-center justify-between pb-3 border-b border-slate-100">
             <h3 class="text-lg font-black text-slate-800">Tambah Komoditas Baru</h3>
@@ -1217,7 +973,6 @@ $metricsBNH = getMetrics($perbenihanList);
                 <select name="type" id="add-type" required class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500">
                     <option value="produk">📦 1. Pakan Jadi (Produk Olahan)</option>
                     <option value="bahan_baku">🌾 2. Bahan Baku Pakan</option>
-                    <option value="perbenihan">🌱 3. Stok Perbenihan Bersertifikasi</option>
                 </select>
             </div>
 
@@ -1328,7 +1083,6 @@ $metricsBNH = getMetrics($perbenihanList);
                 <select name="type" id="edit-type" required class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl font-bold">
                     <option value="produk">📦 1. Pakan Jadi (Produk Olahan)</option>
                     <option value="bahan_baku">🌾 2. Bahan Baku Pakan</option>
-                    <option value="perbenihan">🌱 3. Stok Perbenihan Bersertifikasi</option>
                 </select>
             </div>
 
@@ -1607,13 +1361,6 @@ $metricsBNH = getMetrics($perbenihanList);
                         <?php foreach ($produkList as $it): ?>
                         <option value="<?= $it['id'] ?>" data-unit="<?= htmlspecialchars($it['unit']) ?>" data-stock="<?= $it['stock_current'] ?>">
                             📦 <?= htmlspecialchars($it['name']) ?> (Stok: <?= number_format($it['stock_current'], 0, ',', '.') ?> <?= $it['unit'] ?>)
-                        </option>
-                        <?php endforeach; ?>
-                    </optgroup>
-                    <optgroup label="Stok Perbenihan">
-                        <?php foreach ($perbenihanList as $it): ?>
-                        <option value="<?= $it['id'] ?>" data-unit="<?= htmlspecialchars($it['unit']) ?>" data-stock="<?= $it['stock_current'] ?>">
-                            🌱 <?= htmlspecialchars($it['name']) ?> (Stok: <?= number_format($it['stock_current'], 0, ',', '.') ?> <?= $it['unit'] ?>)
                         </option>
                         <?php endforeach; ?>
                     </optgroup>
