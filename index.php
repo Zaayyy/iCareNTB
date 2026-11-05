@@ -150,43 +150,9 @@ foreach ($pakanList as $item) {
         </section>
 
         <!-- ======================================================== -->
-        <!-- FILTER PILLS, SEARCH & SORT BAR -->
+        <!-- GRID KATALOG PAKAN JADI (4 KOLOM SESUAI REFERENSI) -->
         <!-- ======================================================== -->
         <section class="space-y-4">
-            <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
-                <!-- Category Pills Filter -->
-                <div class="flex flex-wrap items-center gap-2">
-                    <button type="button" data-category="" class="cat-pill-pakan px-4 py-2 rounded-full text-xs font-bold border border-emerald-600 bg-emerald-600 text-white shadow-xs transition-smooth">
-                        Semua Kategori (<?= count($pakanList) ?>)
-                    </button>
-                    <?php foreach ($catPakan as $cat): ?>
-                    <button type="button" data-category="<?= htmlspecialchars($cat) ?>" class="cat-pill-pakan px-4 py-2 rounded-full text-xs font-bold border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 transition-smooth">
-                        <?= htmlspecialchars($cat) ?>
-                    </button>
-                    <?php endforeach; ?>
-                </div>
-
-                <!-- Search Input & Status Dropdown -->
-                <div class="flex items-center space-x-2">
-                    <div class="relative w-full sm:w-72">
-                        <input type="text" id="search-pakan" placeholder="Cari varian pakan jadi..." class="w-full pl-9 pr-3 py-2 rounded-full text-xs border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 shadow-2xs">
-                        <div class="absolute left-3 top-2.5 text-slate-400">
-                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                            </svg>
-                        </div>
-                    </div>
-                    <select id="status-pakan" class="px-3 py-2 text-xs rounded-full border border-slate-200 bg-white text-slate-600 focus:outline-none focus:ring-2 focus:ring-emerald-500 shadow-2xs font-semibold">
-                        <option value="">Semua Status</option>
-                        <option value="safe">Tersedia</option>
-                        <option value="critical">Stok Terbatas</option>
-                    </select>
-                </div>
-            </div>
-
-            <!-- ======================================================== -->
-            <!-- GRID KATALOG PAKAN JADI (4 KOLOM SESUAI REFERENSI) -->
-            <!-- ======================================================== -->
             <div id="grid-pakan-jadi" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 pt-2">
                 <?php foreach ($pakanList as $item): 
                     $isCritical = ($item['stock_current'] <= $item['stock_minimum']);

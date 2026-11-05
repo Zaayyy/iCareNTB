@@ -2,10 +2,6 @@
 
 let currentPublicDetailItem = null;
 
-document.addEventListener('DOMContentLoaded', () => {
-    initPublicFilters();
-});
-
 // Modal Helpers
 function openModal(modalId) {
     const dialog = document.getElementById(modalId);
@@ -35,71 +31,7 @@ document.querySelectorAll('dialog').forEach(dialog => {
     });
 });
 
-// 1. Live Filter & Search Katalog Pakan Jadi
-function initPublicFilters() {
-    const searchInput = document.getElementById('search-pakan');
-    const statusSelect = document.getElementById('status-pakan');
-    const categoryPills = document.querySelectorAll('.cat-pill-pakan');
-    const cards = document.querySelectorAll('.item-card-pakan');
-    const noResults = document.getElementById('no-results-pakan');
-
-    let currentCategory = '';
-
-    function applyFilter() {
-        const query = searchInput ? searchInput.value.toLowerCase().trim() : '';
-        const statusVal = statusSelect ? statusSelect.value : 'all';
-        let visibleCount = 0;
-
-        cards.forEach(card => {
-            const name = (card.getAttribute('data-name') || '').toLowerCase();
-            const code = (card.getAttribute('data-code') || '').toLowerCase();
-            const cat = card.getAttribute('data-category') || '';
-            const isCritical = card.getAttribute('data-critical') === '1';
-
-            let matchQuery = !query || name.includes(query) || code.includes(query) || cat.toLowerCase().includes(query);
-            let matchCategory = !currentCategory || cat === currentCategory;
-            let matchStatus = true;
-
-            if (statusVal === 'safe') matchStatus = !isCritical;
-            if (statusVal === 'critical') matchStatus = isCritical;
-
-            if (matchQuery && matchCategory && matchStatus) {
-                card.classList.remove('hidden');
-                visibleCount++;
-            } else {
-                card.classList.add('hidden');
-            }
-        });
-
-        if (noResults) {
-            if (visibleCount === 0) {
-                noResults.classList.remove('hidden');
-            } else {
-                noResults.classList.add('hidden');
-            }
-        }
-    }
-
-    if (searchInput) searchInput.addEventListener('input', applyFilter);
-    if (statusSelect) statusSelect.addEventListener('change', applyFilter);
-
-    categoryPills.forEach(pill => {
-        pill.addEventListener('click', () => {
-            categoryPills.forEach(p => {
-                p.classList.remove('bg-emerald-600', 'text-white', 'shadow-xs');
-                p.classList.add('bg-white', 'text-slate-600', 'hover:bg-slate-50');
-            });
-
-            pill.classList.add('bg-emerald-600', 'text-white', 'shadow-xs');
-            pill.classList.remove('bg-white', 'text-slate-600', 'hover:bg-slate-50');
-
-            currentCategory = pill.getAttribute('data-category') || '';
-            applyFilter();
-        });
-    });
-}
-
-// 2. Modal Detail Spesifikasi Pakan Jadi (Read-Only)
+// Modal Detail Spesifikasi Pakan Jadi (Read-Only)
 function openDetailModalPublic(item) {
     if (!item) return;
     currentPublicDetailItem = item;
