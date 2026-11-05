@@ -862,13 +862,15 @@ $metricsBNH = getMetrics($perbenihanList);
                                     </span>
                                 </td>
                                 <td class="py-3.5 px-4 text-right font-black <?= $m['type'] === 'IN' ? 'text-emerald-700' : 'text-rose-600' ?>">
-                                    <?= $m['type'] === 'IN' ? '+' : '-' ?><?= number_format($m['amount'], 0, ',', '.') ?> <?= htmlspecialchars($m['unit']) ?>
+                                    <?= $m['type'] === 'IN' ? '+' : '-' ?><?= number_format((float)($m['quantity'] ?? 0), 0, ',', '.') ?> <?= htmlspecialchars($m['unit']) ?>
                                 </td>
                                 <td class="py-3.5 px-4 text-slate-600 font-medium"><?= htmlspecialchars($m['officer_name'] ?? 'Tim BRMP') ?></td>
                                 <td class="py-3.5 px-4 text-slate-500">
                                     <div class="line-clamp-1" title="<?= htmlspecialchars($m['notes'] ?? '-') ?>"><?= htmlspecialchars($m['notes'] ?? '-') ?></div>
-                                    <?php if (!empty($m['recipient_location'])): ?>
-                                    <div class="text-[10px] text-emerald-700 font-bold mt-0.5">📍 <?= htmlspecialchars($m['recipient_location']) ?></div>
+                                    <?php if (!empty($m['location_name'])): ?>
+                                    <div class="text-[10px] text-emerald-700 font-bold mt-0.5">📍 <?= htmlspecialchars($m['location_name']) ?></div>
+                                    <?php elseif (!empty($m['destination_or_source'])): ?>
+                                    <div class="text-[10px] text-slate-500 font-semibold mt-0.5">🏢 <?= htmlspecialchars($m['destination_or_source']) ?></div>
                                     <?php endif; ?>
                                 </td>
                             </tr>
