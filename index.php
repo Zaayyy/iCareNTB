@@ -157,73 +157,76 @@ foreach ($pakanList as $item) {
                 <?php foreach ($pakanList as $item): 
                     $isCritical = ($item['stock_current'] <= $item['stock_minimum']);
                 ?>
-                <div class="item-card-pakan bg-white rounded-3xl p-5 border border-slate-100/90 shadow-[0_4px_25px_rgba(0,0,0,0.03)] item-card-hover flex flex-col justify-between group"
+                <div class="item-card-pakan bg-white rounded-3xl p-5 border border-slate-200/90 shadow-[0_4px_20px_rgba(0,0,0,0.03)] hover:border-emerald-300 hover:shadow-[0_16px_32px_rgba(5,150,105,0.08)] item-card-hover flex flex-col justify-between group transition-all"
                      data-name="<?= htmlspecialchars($item['name']) ?>"
                      data-code="<?= htmlspecialchars($item['code']) ?>"
                      data-category="<?= htmlspecialchars($item['category']) ?>"
                      data-critical="<?= $isCritical ? '1' : '0' ?>">
                     <div>
                         <!-- Product Image Area -->
-                        <div class="h-44 w-full bg-slate-50/70 rounded-2xl flex items-center justify-center p-3 mb-4 overflow-hidden relative border border-slate-100">
+                        <div class="h-44 w-full bg-linear-to-b from-slate-50 to-slate-100/70 rounded-2xl flex items-center justify-center p-3 mb-3.5 overflow-hidden relative border border-slate-100 group-hover:border-slate-200 transition-colors">
                             <img src="<?= htmlspecialchars($item['image_url']) ?>" 
                                  alt="<?= htmlspecialchars($item['name']) ?>" 
                                  class="max-h-full max-w-full object-contain rounded-xl transition-transform duration-300 group-hover:scale-105"
                                  loading="lazy">
-                            <span class="absolute top-2.5 right-2.5 bg-black/50 backdrop-blur-xs text-[10px] font-mono text-white px-2 py-0.5 rounded-full font-bold">
+                            <span class="absolute top-2.5 right-2.5 bg-slate-900/80 backdrop-blur-md text-[10px] font-mono text-white font-bold px-2 py-0.5 rounded-lg shadow-xs">
                                 <?= htmlspecialchars($item['code']) ?>
                             </span>
                             <?php if (!empty($item['category'])): ?>
-                            <span class="absolute top-2.5 left-2.5 bg-white/95 backdrop-blur-xs text-[10px] font-bold text-slate-700 px-2 py-0.5 rounded-full shadow-2xs border border-slate-200">
+                            <span class="absolute bottom-2.5 left-2.5 bg-white/90 backdrop-blur-md text-[10px] font-bold text-slate-700 px-2.5 py-0.5 rounded-full shadow-2xs border border-slate-200/80">
                                 <?= htmlspecialchars($item['category']) ?>
                             </span>
                             <?php endif; ?>
                         </div>
 
                         <!-- Status Badge (Tersedia / Stok Terbatas) -->
-                        <div>
+                        <div class="flex items-center justify-between">
                             <?php if ($isCritical): ?>
-                            <span class="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full text-xs font-bold bg-rose-50 text-rose-700 border border-rose-200/60 shadow-xs">
+                            <span class="inline-flex items-center space-x-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-rose-50 text-rose-700 border border-rose-200/70 shadow-2xs">
                                 <span class="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse"></span>
                                 <span>Stok Terbatas</span>
                             </span>
                             <?php else: ?>
-                            <span class="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200/60 shadow-xs">
+                            <span class="inline-flex items-center space-x-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200/70 shadow-2xs">
                                 <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
                                 <span>Tersedia</span>
                             </span>
                             <?php endif; ?>
+
+                            <span class="text-[11px] font-semibold text-slate-400">
+                                Min: <?= number_format($item['stock_minimum'], 0, ',', '.') ?> <?= htmlspecialchars($item['unit']) ?>
+                            </span>
                         </div>
 
                         <!-- Title -->
-                        <h3 class="text-base font-extrabold text-slate-900 mt-2 line-clamp-1 group-hover:text-emerald-700 transition-smooth" title="<?= htmlspecialchars($item['name']) ?>">
+                        <h3 class="text-[15px] font-black text-slate-900 mt-2 line-clamp-1 group-hover:text-emerald-700 transition-smooth" title="<?= htmlspecialchars($item['name']) ?>">
                             <?= htmlspecialchars($item['name']) ?>
                         </h3>
 
                         <!-- Spesifikasi Nutrisi Ringkas -->
-                        <div class="mt-2 py-1.5 px-2.5 bg-slate-50 rounded-xl border border-slate-100 flex items-center justify-between text-[11px] text-slate-600">
+                        <div class="mt-2 py-1.5 px-2.5 bg-slate-50/80 rounded-xl border border-slate-100 flex items-center justify-between text-[11px] text-slate-600">
                             <div>
-                                <span class="text-slate-400 block text-[9px] uppercase"><?= htmlspecialchars($item['spec_1_label'] ?: 'Protein') ?></span>
-                                <span class="font-bold text-slate-800"><?= htmlspecialchars($item['spec_1_value'] ?: '-') ?></span>
+                                <span class="text-slate-400 block text-[9px] uppercase font-bold tracking-wider"><?= htmlspecialchars($item['spec_1_label'] ?: 'Protein') ?></span>
+                                <span class="font-black text-slate-800"><?= htmlspecialchars($item['spec_1_value'] ?: '-') ?></span>
                             </div>
                             <div class="text-right">
-                                <span class="text-slate-400 block text-[9px] uppercase"><?= htmlspecialchars($item['spec_2_label'] ?: 'Kadar Air') ?></span>
-                                <span class="font-bold text-slate-800"><?= htmlspecialchars($item['spec_2_value'] ?: '-') ?></span>
+                                <span class="text-slate-400 block text-[9px] uppercase font-bold tracking-wider"><?= htmlspecialchars($item['spec_2_label'] ?: 'Kadar Air') ?></span>
+                                <span class="font-black text-slate-800"><?= htmlspecialchars($item['spec_2_value'] ?: '-') ?></span>
                             </div>
                         </div>
 
-                        <!-- Stock Line -->
-                        <div class="flex items-center justify-between text-xs mt-3">
-                            <span class="text-slate-500 font-medium">Stok Ketersediaan:</span>
-                            <span class="font-black text-[#059669] text-sm">
+                        <!-- Stock Box Container -->
+                        <div class="bg-slate-50/80 rounded-2xl p-2.5 border border-slate-100 flex items-center justify-between mt-2.5">
+                            <span class="text-[11px] font-semibold text-slate-500">Stok Ketersediaan:</span>
+                            <span class="font-black text-emerald-700 text-sm">
                                 <?= number_format($item['stock_current'], 0, ',', '.') ?> <?= htmlspecialchars($item['unit']) ?>
                             </span>
                         </div>
                     </div>
 
                     <!-- Card Bottom Action Link (Read-Only Publik) -->
-                    <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between">
-                        <!-- Tautan Detail Spesifikasi -->
-                        <button type="button" onclick='openDetailModalPublic(<?= json_encode($item) ?>)' class="w-full inline-flex items-center justify-center space-x-1.5 py-2 px-3 text-xs font-bold text-emerald-700 bg-emerald-50/80 hover:bg-emerald-100/80 rounded-xl transition-smooth cursor-pointer group/link">
+                    <div class="mt-4 pt-3 border-t border-slate-100">
+                        <button type="button" onclick='openDetailModalPublic(<?= json_encode($item) ?>)' class="w-full inline-flex items-center justify-center space-x-1.5 py-2.5 px-4 text-xs font-bold text-emerald-800 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200/60 rounded-xl transition-smooth shadow-2xs cursor-pointer group/link">
                             <span>Detail Spesifikasi & Nutrisi</span>
                             <svg class="w-3.5 h-3.5 transition-transform duration-200 group-hover/link:translate-x-1 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />

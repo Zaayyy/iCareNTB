@@ -311,90 +311,122 @@ $metricsBNH = getMetrics($perbenihanList);
                 <?php foreach ($produkList as $item): 
                     $isCritical = ($item['stock_current'] <= $item['stock_minimum']);
                 ?>
-                <div class="item-card-produk bg-white rounded-3xl p-5 border border-slate-100/90 shadow-[0_4px_25px_rgba(0,0,0,0.03)] item-card-hover flex flex-col justify-between group"
+                <div class="item-card-produk bg-white rounded-3xl p-5 border border-slate-200/90 shadow-[0_4px_20px_rgba(0,0,0,0.03)] hover:border-emerald-300 hover:shadow-[0_16px_32px_rgba(5,150,105,0.08)] item-card-hover flex flex-col justify-between group transition-all"
                      data-name="<?= htmlspecialchars($item['name']) ?>"
                      data-code="<?= htmlspecialchars($item['code']) ?>"
                      data-category="<?= htmlspecialchars($item['category']) ?>"
                      data-critical="<?= $isCritical ? '1' : '0' ?>">
                     <div>
                         <!-- Product Image Area with Admin Quick Action Badges -->
-                        <div class="h-44 w-full bg-slate-50/70 rounded-2xl flex items-center justify-center p-3 mb-4 overflow-hidden relative border border-slate-100">
+                        <div class="h-44 w-full bg-linear-to-b from-slate-50 to-slate-100/70 rounded-2xl flex items-center justify-center p-3 mb-3.5 overflow-hidden relative border border-slate-100 group-hover:border-slate-200 transition-colors">
                             <img src="<?= htmlspecialchars($item['image_url']) ?>" 
                                  alt="<?= htmlspecialchars($item['name']) ?>" 
                                  class="max-h-full max-w-full object-contain rounded-xl transition-transform duration-300 group-hover:scale-105"
                                  loading="lazy">
-                            <span class="absolute top-2.5 right-2.5 bg-black/50 backdrop-blur-xs text-[10px] font-mono text-white px-2 py-0.5 rounded-full font-bold">
-                                <?= htmlspecialchars($item['code']) ?>
-                            </span>
-                            <!-- Quick Edit & Delete Icons -->
-                            <div class="absolute top-2.5 left-2.5 flex items-center space-x-1 opacity-80 group-hover:opacity-100 transition-opacity">
-                                <button type="button" onclick='event.stopPropagation(); openEditModal(<?= json_encode($item) ?>)' class="p-1.5 bg-white/95 hover:bg-white text-slate-700 hover:text-blue-600 rounded-lg shadow-xs backdrop-blur-xs transition-smooth" title="Edit Data Pakan Jadi">
+
+                            <!-- Top Badges: Edit/Delete on Left, Code on Right -->
+                            <div class="absolute top-2.5 left-2.5 flex items-center space-x-1 bg-white/90 backdrop-blur-md p-1 rounded-xl shadow-xs border border-slate-200/70 opacity-90 group-hover:opacity-100 transition-opacity">
+                                <button type="button" onclick='event.stopPropagation(); openEditModal(<?= json_encode($item) ?>)' class="p-1 hover:bg-slate-100 text-slate-600 hover:text-blue-600 rounded-lg transition-smooth" title="Edit Data Pakan Jadi">
                                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
                                 </button>
-                                <button type="button" onclick='event.stopPropagation(); confirmDeleteItem(<?= $item['id'] ?>, "<?= htmlspecialchars(addslashes($item['name'])) ?>")' class="p-1.5 bg-white/95 hover:bg-white text-slate-700 hover:text-rose-600 rounded-lg shadow-xs backdrop-blur-xs transition-smooth" title="Hapus Produk">
+                                <span class="w-px h-3 bg-slate-200"></span>
+                                <button type="button" onclick='event.stopPropagation(); confirmDeleteItem(<?= $item['id'] ?>, "<?= htmlspecialchars(addslashes($item['name'])) ?>")' class="p-1 hover:bg-rose-50 text-slate-600 hover:text-rose-600 rounded-lg transition-smooth" title="Hapus Produk">
                                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
                                 </button>
                             </div>
-                        </div>
 
-                        <!-- Status Badge -->
-                        <div>
-                            <?php if ($isCritical): ?>
-                            <span class="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full text-xs font-bold bg-rose-50 text-rose-700 border border-rose-200/60 shadow-xs">
-                                <span class="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse"></span>
-                                <span>Stok Kritis</span>
+                            <span class="absolute top-2.5 right-2.5 bg-slate-900/80 backdrop-blur-md text-[10px] font-mono text-white font-bold px-2 py-0.5 rounded-lg shadow-xs">
+                                <?= htmlspecialchars($item['code']) ?>
                             </span>
-                            <?php else: ?>
-                            <span class="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200/60 shadow-xs">
-                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                                <span>Tersedia</span>
+
+                            <?php if (!empty($item['category'])): ?>
+                            <span class="absolute bottom-2.5 left-2.5 bg-white/90 backdrop-blur-md text-[10px] font-bold text-slate-700 px-2.5 py-0.5 rounded-full shadow-2xs border border-slate-200/80">
+                                <?= htmlspecialchars($item['category']) ?>
                             </span>
                             <?php endif; ?>
                         </div>
 
+                        <!-- Status Badge -->
+                        <div class="flex items-center justify-between">
+                            <?php if ($isCritical): ?>
+                            <span class="inline-flex items-center space-x-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-rose-50 text-rose-700 border border-rose-200/70 shadow-2xs">
+                                <span class="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse"></span>
+                                <span>Stok Kritis</span>
+                            </span>
+                            <?php else: ?>
+                            <span class="inline-flex items-center space-x-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200/70 shadow-2xs">
+                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                                <span>Tersedia</span>
+                            </span>
+                            <?php endif; ?>
+
+                            <span class="text-[11px] font-semibold text-slate-400">
+                                Min: <?= number_format($item['stock_minimum'], 0, ',', '.') ?> <?= htmlspecialchars($item['unit']) ?>
+                            </span>
+                        </div>
+
                         <!-- Title -->
-                        <h3 class="text-base font-extrabold text-slate-900 mt-2 line-clamp-1 group-hover:text-emerald-700 transition-smooth" title="<?= htmlspecialchars($item['name']) ?>">
+                        <h3 class="text-[15px] font-black text-slate-900 mt-2 line-clamp-1 group-hover:text-emerald-700 transition-smooth" title="<?= htmlspecialchars($item['name']) ?>">
                             <?= htmlspecialchars($item['name']) ?>
                         </h3>
 
-                        <!-- Stock Line with Quick Adjust (+/-) -->
-                        <div class="flex items-center justify-between text-xs mt-1.5">
-                            <span class="text-slate-500 font-medium">
-                                Stok: <span id="card-stock-<?= $item['id'] ?>" class="font-black text-[#059669] text-sm"><?= number_format($item['stock_current'], 0, ',', '.') ?> <?= htmlspecialchars($item['unit']) ?></span>
-                            </span>
-                            <div class="flex items-center space-x-1" onclick="event.stopPropagation()">
-                                <button onclick="quickStockAdjust(<?= $item['id'] ?>, -1, 'Pengurangan 1 <?= $item['unit'] ?>')" class="w-6 h-6 flex items-center justify-center rounded-lg bg-slate-100 hover:bg-rose-100 text-slate-600 hover:text-rose-700 font-bold text-xs transition-smooth" title="Kurang 1">-</button>
-                                <button onclick="quickStockAdjust(<?= $item['id'] ?>, 1, 'Penambahan 1 <?= $item['unit'] ?>')" class="w-6 h-6 flex items-center justify-center rounded-lg bg-slate-100 hover:bg-emerald-100 text-slate-600 hover:text-emerald-700 font-bold text-xs transition-smooth" title="Tambah 1">+</button>
+                        <!-- Spesifikasi Nutrisi Ringkas -->
+                        <div class="mt-2 py-1.5 px-2.5 bg-slate-50/80 rounded-xl border border-slate-100 flex items-center justify-between text-[11px] text-slate-600">
+                            <div>
+                                <span class="text-slate-400 block text-[9px] uppercase font-bold tracking-wider"><?= htmlspecialchars($item['spec_1_label'] ?: 'Protein') ?></span>
+                                <span class="font-black text-slate-800"><?= htmlspecialchars($item['spec_1_value'] ?: '-') ?></span>
+                            </div>
+                            <div class="text-right">
+                                <span class="text-slate-400 block text-[9px] uppercase font-bold tracking-wider"><?= htmlspecialchars($item['spec_2_label'] ?: 'Kadar Air') ?></span>
+                                <span class="font-black text-slate-800"><?= htmlspecialchars($item['spec_2_value'] ?: '-') ?></span>
+                            </div>
+                        </div>
+
+                        <!-- Stock Card Container with Integrated Stepper -->
+                        <div class="bg-slate-50/80 rounded-2xl p-2.5 border border-slate-100 flex items-center justify-between mt-2.5">
+                            <div>
+                                <span class="text-[9px] uppercase font-bold text-slate-400 block tracking-wider">Stok Ketersediaan</span>
+                                <span id="card-stock-<?= $item['id'] ?>" class="font-black text-emerald-700 text-sm">
+                                    <?= number_format($item['stock_current'], 0, ',', '.') ?> <?= htmlspecialchars($item['unit']) ?>
+                                </span>
+                            </div>
+                            <div class="inline-flex items-center bg-white rounded-xl p-0.5 border border-slate-200 shadow-2xs" onclick="event.stopPropagation()">
+                                <button type="button" onclick="quickStockAdjust(<?= $item['id'] ?>, -1, 'Pengurangan 1 <?= $item['unit'] ?>')" class="w-6 h-6 flex items-center justify-center rounded-lg hover:bg-rose-50 text-slate-500 hover:text-rose-600 font-black text-xs transition-smooth" title="Kurang 1">-</button>
+                                <span class="w-px h-3 bg-slate-200"></span>
+                                <button type="button" onclick="quickStockAdjust(<?= $item['id'] ?>, 1, 'Penambahan 1 <?= $item['unit'] ?>')" class="w-6 h-6 flex items-center justify-center rounded-lg hover:bg-emerald-50 text-slate-500 hover:text-emerald-700 font-black text-xs transition-smooth" title="Tambah 1">+</button>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Card Bottom Action Link with Produksi, Resep BOM & Distribusi -->
-                    <div class="mt-4 pt-3 border-t border-slate-100 flex flex-col gap-2">
-                        <div class="flex items-center justify-between text-xs font-semibold gap-1.5">
-                            <div class="flex items-center space-x-1">
-                                <button onclick="openProductionModal(<?= $item['id'] ?>)" class="inline-flex items-center space-x-1 px-2.5 py-1 text-xs font-bold text-amber-900 bg-amber-100 hover:bg-amber-200 rounded-lg transition-smooth border border-amber-300/60 shadow-2xs" title="Catat Produksi Pakan">
-                                    <span>🏭 Produksi</span>
-                                </button>
-                                <button onclick='openRecipeBuilder(<?= (int)$item['id'] ?>, <?= htmlspecialchars(json_encode($item['name']), ENT_QUOTES) ?>)' class="inline-flex items-center space-x-1 px-2 py-1 text-[11px] font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg transition-smooth border border-slate-200" title="Atur Formula Komposisi Bahan Baku">
-                                    <span>🧪 Resep</span>
-                                </button>
-                            </div>
-                            <div class="flex items-center space-x-1">
-                                <button onclick='openDistributeModal(<?= json_encode($item) ?>)' class="inline-flex items-center space-x-1 px-2.5 py-1 text-[11px] font-bold text-emerald-800 bg-emerald-50 hover:bg-emerald-100 rounded-lg transition-smooth border border-emerald-200/60 shadow-2xs" title="Salurkan Produk">
-                                    <span>Salurkan</span>
-                                </button>
-                                <button onclick='openProductMapModal(<?= json_encode($item) ?>)' class="p-1 text-slate-500 hover:text-emerald-700 rounded-lg border border-slate-200 bg-slate-50 hover:bg-white transition-smooth" title="Peta Distribusi">
-                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-                                </button>
-                            </div>
+                    <!-- Action Buttons Section (Clean 2x2 Grid) -->
+                    <div class="mt-4 pt-3 border-t border-slate-100 space-y-2">
+                        <!-- Row 1: Primary Operations -->
+                        <div class="grid grid-cols-2 gap-2">
+                            <button type="button" onclick="openProductionModal(<?= $item['id'] ?>)" class="inline-flex items-center justify-center space-x-1.5 py-2 px-3 text-xs font-bold text-white bg-amber-500 hover:bg-amber-600 rounded-xl shadow-xs transition-smooth" title="Catat Produksi Pakan">
+                                <span>🏭 Produksi</span>
+                            </button>
+                            <button type="button" onclick='openDistributeModal(<?= json_encode($item) ?>)' class="inline-flex items-center justify-center space-x-1.5 py-2 px-3 text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 rounded-xl shadow-xs transition-smooth" title="Salurkan Produk">
+                                <span>📦 Salurkan</span>
+                            </button>
                         </div>
-                        <div onclick='openDetailModal(<?= json_encode($item) ?>)' class="flex items-center justify-between text-xs font-bold text-slate-500 hover:text-emerald-700 cursor-pointer pt-1 group/link">
+
+                        <!-- Row 2: Secondary Utilities (Resep & Peta) -->
+                        <div class="grid grid-cols-2 gap-2">
+                            <button type="button" onclick='openRecipeBuilder(<?= (int)$item['id'] ?>, <?= htmlspecialchars(json_encode($item['name']), ENT_QUOTES) ?>)' class="inline-flex items-center justify-center space-x-1.5 py-1.5 px-2 text-[11px] font-bold text-slate-700 hover:text-amber-800 bg-slate-50 hover:bg-amber-50 rounded-xl border border-slate-200 hover:border-amber-300 transition-smooth" title="Atur Formula Komposisi Bahan Baku">
+                                <span>🧪 Resep BOM</span>
+                            </button>
+                            <button type="button" onclick='openProductMapModal(<?= json_encode($item) ?>)' class="inline-flex items-center justify-center space-x-1.5 py-1.5 px-2 text-[11px] font-bold text-slate-700 hover:text-emerald-800 bg-slate-50 hover:bg-emerald-50 rounded-xl border border-slate-200 hover:border-emerald-300 transition-smooth" title="Lihat Peta Distribusi">
+                                <span>📍 Peta Sebaran</span>
+                            </button>
+                        </div>
+
+                        <!-- Row 3: Detail Modal Trigger -->
+                        <button type="button" onclick='openDetailModal(<?= json_encode($item) ?>)' class="w-full inline-flex items-center justify-center space-x-1 text-xs font-bold text-slate-500 hover:text-emerald-700 py-1 transition-smooth cursor-pointer group/link">
                             <span>Detail Spesifikasi & Mutu</span>
                             <svg class="w-3.5 h-3.5 transition-transform duration-200 group-hover/link:translate-x-1 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                             </svg>
-                        </div>
+                        </button>
                     </div>
                 </div>
                 <?php endforeach; ?>
@@ -441,75 +473,104 @@ $metricsBNH = getMetrics($perbenihanList);
                 <?php foreach ($bahanBakuList as $item): 
                     $isCritical = ($item['stock_current'] <= $item['stock_minimum']);
                 ?>
-                <div class="item-card-bahan-baku bg-white rounded-3xl p-5 border border-slate-100/90 shadow-[0_4px_25px_rgba(0,0,0,0.03)] item-card-hover flex flex-col justify-between group"
+                <div class="item-card-bahan-baku bg-white rounded-3xl p-5 border border-slate-200/90 shadow-[0_4px_20px_rgba(0,0,0,0.03)] hover:border-emerald-300 hover:shadow-[0_16px_32px_rgba(5,150,105,0.08)] item-card-hover flex flex-col justify-between group transition-all"
                      data-name="<?= htmlspecialchars($item['name']) ?>"
                      data-code="<?= htmlspecialchars($item['code']) ?>"
                      data-category="<?= htmlspecialchars($item['category']) ?>"
                      data-critical="<?= $isCritical ? '1' : '0' ?>">
                     <div>
                         <!-- Product Image Area with Quick Action Badges -->
-                        <div class="h-44 w-full bg-slate-50/70 rounded-2xl flex items-center justify-center p-3 mb-4 overflow-hidden relative border border-slate-100">
+                        <div class="h-44 w-full bg-linear-to-b from-slate-50 to-slate-100/70 rounded-2xl flex items-center justify-center p-3 mb-3.5 overflow-hidden relative border border-slate-100 group-hover:border-slate-200 transition-colors">
                             <img src="<?= htmlspecialchars($item['image_url']) ?>" 
                                  alt="<?= htmlspecialchars($item['name']) ?>" 
                                  class="max-h-full max-w-full object-contain rounded-xl transition-transform duration-300 group-hover:scale-105"
                                  loading="lazy">
-                            <span class="absolute top-2.5 right-2.5 bg-black/50 backdrop-blur-xs text-[10px] font-mono text-white px-2 py-0.5 rounded-full font-bold">
-                                <?= htmlspecialchars($item['code']) ?>
-                            </span>
-                            <!-- Quick Edit & Delete Icons -->
-                            <div class="absolute top-2.5 left-2.5 flex items-center space-x-1 opacity-80 group-hover:opacity-100 transition-opacity">
-                                <button type="button" onclick='event.stopPropagation(); openEditModal(<?= json_encode($item) ?>)' class="p-1.5 bg-white/95 hover:bg-white text-slate-700 hover:text-blue-600 rounded-lg shadow-xs backdrop-blur-xs transition-smooth" title="Edit Item">
+
+                            <!-- Top Badges: Edit/Delete on Left, Code on Right -->
+                            <div class="absolute top-2.5 left-2.5 flex items-center space-x-1 bg-white/90 backdrop-blur-md p-1 rounded-xl shadow-xs border border-slate-200/70 opacity-90 group-hover:opacity-100 transition-opacity">
+                                <button type="button" onclick='event.stopPropagation(); openEditModal(<?= json_encode($item) ?>)' class="p-1 hover:bg-slate-100 text-slate-600 hover:text-blue-600 rounded-lg transition-smooth" title="Edit Item">
                                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
                                 </button>
-                                <button type="button" onclick='event.stopPropagation(); confirmDeleteItem(<?= $item['id'] ?>, "<?= htmlspecialchars(addslashes($item['name'])) ?>")' class="p-1.5 bg-white/95 hover:bg-white text-slate-700 hover:text-rose-600 rounded-lg shadow-xs backdrop-blur-xs transition-smooth" title="Hapus Item">
+                                <span class="w-px h-3 bg-slate-200"></span>
+                                <button type="button" onclick='event.stopPropagation(); confirmDeleteItem(<?= $item['id'] ?>, "<?= htmlspecialchars(addslashes($item['name'])) ?>")' class="p-1 hover:bg-rose-50 text-slate-600 hover:text-rose-600 rounded-lg transition-smooth" title="Hapus Item">
                                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
                                 </button>
                             </div>
-                        </div>
 
-                        <!-- Status Badge -->
-                        <div>
-                            <?php if ($isCritical): ?>
-                            <span class="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full text-xs font-bold bg-rose-50 text-rose-700 border border-rose-200/60 shadow-xs">
-                                <span class="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse"></span>
-                                <span>Stok Kritis</span>
+                            <span class="absolute top-2.5 right-2.5 bg-slate-900/80 backdrop-blur-md text-[10px] font-mono text-white font-bold px-2 py-0.5 rounded-lg shadow-xs">
+                                <?= htmlspecialchars($item['code']) ?>
                             </span>
-                            <?php else: ?>
-                            <span class="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200/60 shadow-xs">
-                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                                <span>Tersedia</span>
+
+                            <?php if (!empty($item['category'])): ?>
+                            <span class="absolute bottom-2.5 left-2.5 bg-white/90 backdrop-blur-md text-[10px] font-bold text-slate-700 px-2.5 py-0.5 rounded-full shadow-2xs border border-slate-200/80">
+                                <?= htmlspecialchars($item['category']) ?>
                             </span>
                             <?php endif; ?>
                         </div>
 
+                        <!-- Status Badge -->
+                        <div class="flex items-center justify-between">
+                            <?php if ($isCritical): ?>
+                            <span class="inline-flex items-center space-x-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-rose-50 text-rose-700 border border-rose-200/70 shadow-2xs">
+                                <span class="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse"></span>
+                                <span>Stok Kritis</span>
+                            </span>
+                            <?php else: ?>
+                            <span class="inline-flex items-center space-x-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200/70 shadow-2xs">
+                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                                <span>Tersedia</span>
+                            </span>
+                            <?php endif; ?>
+
+                            <span class="text-[11px] font-semibold text-slate-400">
+                                Min: <?= number_format($item['stock_minimum'], 0, ',', '.') ?> <?= htmlspecialchars($item['unit']) ?>
+                            </span>
+                        </div>
+
                         <!-- Title -->
-                        <h3 class="text-base font-extrabold text-slate-900 mt-2 line-clamp-1 group-hover:text-emerald-700 transition-smooth" title="<?= htmlspecialchars($item['name']) ?>">
+                        <h3 class="text-[15px] font-black text-slate-900 mt-2 line-clamp-1 group-hover:text-emerald-700 transition-smooth" title="<?= htmlspecialchars($item['name']) ?>">
                             <?= htmlspecialchars($item['name']) ?>
                         </h3>
 
-                        <!-- Stock Line with Quick Adjust (+/-) -->
-                        <div class="flex items-center justify-between text-xs mt-1.5">
-                            <span class="text-slate-500 font-medium">
-                                Stok: <span id="card-stock-<?= $item['id'] ?>" class="font-black text-[#059669] text-sm"><?= number_format($item['stock_current'], 0, ',', '.') ?> <?= htmlspecialchars($item['unit']) ?></span>
-                            </span>
-                            <div class="flex items-center space-x-1" onclick="event.stopPropagation()">
-                                <button onclick="quickStockAdjust(<?= $item['id'] ?>, -10, 'Pengurangan 10 <?= $item['unit'] ?>')" class="w-6 h-6 flex items-center justify-center rounded-lg bg-slate-100 hover:bg-rose-100 text-slate-600 hover:text-rose-700 font-bold text-xs transition-smooth" title="Kurang 10">-</button>
-                                <button onclick="quickStockAdjust(<?= $item['id'] ?>, 10, 'Penambahan 10 <?= $item['unit'] ?>')" class="w-6 h-6 flex items-center justify-center rounded-lg bg-slate-100 hover:bg-emerald-100 text-slate-600 hover:text-emerald-700 font-bold text-xs transition-smooth" title="Tambah 10">+</button>
+                        <!-- Spesifikasi Nutrisi Ringkas -->
+                        <div class="mt-2 py-1.5 px-2.5 bg-slate-50/80 rounded-xl border border-slate-100 flex items-center justify-between text-[11px] text-slate-600">
+                            <div>
+                                <span class="text-slate-400 block text-[9px] uppercase font-bold tracking-wider"><?= htmlspecialchars($item['spec_1_label'] ?: 'Parameter 1') ?></span>
+                                <span class="font-black text-slate-800"><?= htmlspecialchars($item['spec_1_value'] ?: '-') ?></span>
+                            </div>
+                            <div class="text-right">
+                                <span class="text-slate-400 block text-[9px] uppercase font-bold tracking-wider"><?= htmlspecialchars($item['spec_2_label'] ?: 'Parameter 2') ?></span>
+                                <span class="font-black text-slate-800"><?= htmlspecialchars($item['spec_2_value'] ?: '-') ?></span>
+                            </div>
+                        </div>
+
+                        <!-- Stock Card Container with Integrated Stepper -->
+                        <div class="bg-slate-50/80 rounded-2xl p-2.5 border border-slate-100 flex items-center justify-between mt-2.5">
+                            <div>
+                                <span class="text-[9px] uppercase font-bold text-slate-400 block tracking-wider">Stok Gudang</span>
+                                <span id="card-stock-<?= $item['id'] ?>" class="font-black text-emerald-700 text-sm">
+                                    <?= number_format($item['stock_current'], 0, ',', '.') ?> <?= htmlspecialchars($item['unit']) ?>
+                                </span>
+                            </div>
+                            <div class="inline-flex items-center bg-white rounded-xl p-0.5 border border-slate-200 shadow-2xs" onclick="event.stopPropagation()">
+                                <button type="button" onclick="quickStockAdjust(<?= $item['id'] ?>, -10, 'Pengurangan 10 <?= $item['unit'] ?>')" class="w-6 h-6 flex items-center justify-center rounded-lg hover:bg-rose-50 text-slate-500 hover:text-rose-600 font-black text-xs transition-smooth" title="Kurang 10">-</button>
+                                <span class="w-px h-3 bg-slate-200"></span>
+                                <button type="button" onclick="quickStockAdjust(<?= $item['id'] ?>, 10, 'Penambahan 10 <?= $item['unit'] ?>')" class="w-6 h-6 flex items-center justify-center rounded-lg hover:bg-emerald-50 text-slate-500 hover:text-emerald-700 font-black text-xs transition-smooth" title="Tambah 10">+</button>
                             </div>
                         </div>
                     </div>
 
                     <!-- Card Bottom Action Link -->
-                    <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-semibold">
-                        <button onclick='openQuickMutation(<?= $item['id'] ?>, "<?= htmlspecialchars(addslashes($item['name'])) ?>", "<?= htmlspecialchars($item['unit']) ?>", "IN")' class="inline-flex items-center space-x-1 px-3 py-1.5 text-xs font-bold text-emerald-800 bg-emerald-50 hover:bg-emerald-100 rounded-xl transition-smooth border border-emerald-200/60 shadow-xs">
-                            <span>+ Tambah Stok</span>
+                    <div class="mt-4 pt-3 border-t border-slate-100 space-y-2">
+                        <button type="button" onclick='openQuickMutation(<?= $item['id'] ?>, "<?= htmlspecialchars(addslashes($item['name'])) ?>", "<?= htmlspecialchars($item['unit']) ?>", "IN")' class="w-full inline-flex items-center justify-center space-x-1.5 py-2 px-3 text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 rounded-xl shadow-xs transition-smooth">
+                            <span>➕ Tambah Stok Bahan Baku</span>
                         </button>
-                        <div onclick='openDetailModal(<?= json_encode($item) ?>)' class="flex items-center space-x-1 text-slate-500 hover:text-emerald-700 cursor-pointer group/link pl-1 font-bold">
-                            <span>Detail Spesifikasi</span>
+                        <button type="button" onclick='openDetailModal(<?= json_encode($item) ?>)' class="w-full inline-flex items-center justify-center space-x-1 text-xs font-bold text-slate-500 hover:text-emerald-700 py-1 transition-smooth cursor-pointer group/link">
+                            <span>Detail Spesifikasi & Nutrisi</span>
                             <svg class="w-3.5 h-3.5 transition-transform duration-200 group-hover/link:translate-x-1 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                             </svg>
-                        </div>
+                        </button>
                     </div>
                 </div>
                 <?php endforeach; ?>
@@ -628,83 +689,109 @@ $metricsBNH = getMetrics($perbenihanList);
                 <?php foreach ($perbenihanList as $item): 
                     $isCritical = ($item['stock_current'] <= $item['stock_minimum']);
                 ?>
-                <div class="item-card-perbenihan bg-white rounded-3xl p-5 border border-slate-100/90 shadow-[0_4px_25px_rgba(0,0,0,0.03)] item-card-hover flex flex-col justify-between group"
+                <div class="item-card-perbenihan bg-white rounded-3xl p-5 border border-slate-200/90 shadow-[0_4px_20px_rgba(0,0,0,0.03)] hover:border-emerald-300 hover:shadow-[0_16px_32px_rgba(5,150,105,0.08)] item-card-hover flex flex-col justify-between group transition-all"
                      data-name="<?= htmlspecialchars($item['name']) ?>"
                      data-code="<?= htmlspecialchars($item['code']) ?>"
                      data-category="<?= htmlspecialchars($item['category']) ?>"
                      data-critical="<?= $isCritical ? '1' : '0' ?>">
                     <div>
-                        <!-- Product Image Area with Quick Action Badges -->
-                        <div class="h-44 w-full bg-slate-50/70 rounded-2xl flex items-center justify-center p-3 mb-4 overflow-hidden relative border border-slate-100">
+                        <!-- Product Image Area with Admin Quick Action Badges -->
+                        <div class="h-44 w-full bg-linear-to-b from-slate-50 to-slate-100/70 rounded-2xl flex items-center justify-center p-3 mb-3.5 overflow-hidden relative border border-slate-100 group-hover:border-slate-200 transition-colors">
                             <img src="<?= htmlspecialchars($item['image_url']) ?>" 
                                  alt="<?= htmlspecialchars($item['name']) ?>" 
                                  class="max-h-full max-w-full object-contain rounded-xl transition-transform duration-300 group-hover:scale-105"
                                  loading="lazy">
-                            <span class="absolute top-2.5 right-2.5 bg-black/50 backdrop-blur-xs text-[10px] font-mono text-white px-2 py-0.5 rounded-full font-bold">
-                                <?= htmlspecialchars($item['code']) ?>
-                            </span>
-                            <!-- Quick Edit & Delete Icons -->
-                            <div class="absolute top-2.5 left-2.5 flex items-center space-x-1 opacity-80 group-hover:opacity-100 transition-opacity">
-                                <button type="button" onclick='event.stopPropagation(); openEditModal(<?= json_encode($item) ?>)' class="p-1.5 bg-white/95 hover:bg-white text-slate-700 hover:text-blue-600 rounded-lg shadow-xs backdrop-blur-xs transition-smooth" title="Edit Data Varietas">
+
+                            <!-- Top Badges: Edit/Delete on Left, Code on Right -->
+                            <div class="absolute top-2.5 left-2.5 flex items-center space-x-1 bg-white/90 backdrop-blur-md p-1 rounded-xl shadow-xs border border-slate-200/70 opacity-90 group-hover:opacity-100 transition-opacity">
+                                <button type="button" onclick='event.stopPropagation(); openEditModal(<?= json_encode($item) ?>)' class="p-1 hover:bg-slate-100 text-slate-600 hover:text-blue-600 rounded-lg transition-smooth" title="Edit Data Varietas">
                                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
                                 </button>
-                                <button type="button" onclick='event.stopPropagation(); confirmDeleteItem(<?= $item['id'] ?>, "<?= htmlspecialchars(addslashes($item['name'])) ?>")' class="p-1.5 bg-white/95 hover:bg-white text-slate-700 hover:text-rose-600 rounded-lg shadow-xs backdrop-blur-xs transition-smooth" title="Hapus Varietas">
+                                <span class="w-px h-3 bg-slate-200"></span>
+                                <button type="button" onclick='event.stopPropagation(); confirmDeleteItem(<?= $item['id'] ?>, "<?= htmlspecialchars(addslashes($item['name'])) ?>")' class="p-1 hover:bg-rose-50 text-slate-600 hover:text-rose-600 rounded-lg transition-smooth" title="Hapus Varietas">
                                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
                                 </button>
                             </div>
-                        </div>
 
-                        <!-- Status Badge -->
-                        <div>
-                            <?php if ($isCritical): ?>
-                            <span class="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full text-xs font-bold bg-rose-50 text-rose-700 border border-rose-200/60 shadow-xs">
-                                <span class="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse"></span>
-                                <span>Stok Kritis</span>
+                            <span class="absolute top-2.5 right-2.5 bg-slate-900/80 backdrop-blur-md text-[10px] font-mono text-white font-bold px-2 py-0.5 rounded-lg shadow-xs">
+                                <?= htmlspecialchars($item['code']) ?>
                             </span>
-                            <?php else: ?>
-                            <span class="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200/60 shadow-xs">
-                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                                <span>Tersedia</span>
+
+                            <?php if (!empty($item['category'])): ?>
+                            <span class="absolute bottom-2.5 left-2.5 bg-white/90 backdrop-blur-md text-[10px] font-bold text-slate-700 px-2.5 py-0.5 rounded-full shadow-2xs border border-slate-200/80">
+                                <?= htmlspecialchars($item['category']) ?>
                             </span>
                             <?php endif; ?>
                         </div>
 
+                        <!-- Status Badge -->
+                        <div class="flex items-center justify-between">
+                            <?php if ($isCritical): ?>
+                            <span class="inline-flex items-center space-x-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-rose-50 text-rose-700 border border-rose-200/70 shadow-2xs">
+                                <span class="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse"></span>
+                                <span>Stok Kritis</span>
+                            </span>
+                            <?php else: ?>
+                            <span class="inline-flex items-center space-x-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200/70 shadow-2xs">
+                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                                <span>Tersedia</span>
+                            </span>
+                            <?php endif; ?>
+
+                            <span class="text-[11px] font-semibold text-slate-400">
+                                Min: <?= number_format($item['stock_minimum'], 0, ',', '.') ?> <?= htmlspecialchars($item['unit']) ?>
+                            </span>
+                        </div>
+
                         <!-- Title -->
-                        <h3 class="text-base font-extrabold text-slate-900 mt-2 line-clamp-1 group-hover:text-emerald-700 transition-smooth" title="<?= htmlspecialchars($item['name']) ?>">
+                        <h3 class="text-[15px] font-black text-slate-900 mt-2 line-clamp-1 group-hover:text-emerald-700 transition-smooth" title="<?= htmlspecialchars($item['name']) ?>">
                             <?= htmlspecialchars($item['name']) ?>
                         </h3>
 
-                        <!-- Stock Line with Quick Adjust (+/-) -->
-                        <div class="flex items-center justify-between text-xs mt-1.5">
-                            <span class="text-slate-500 font-medium">
-                                Stok: <span id="card-stock-<?= $item['id'] ?>" class="font-black text-[#059669] text-sm"><?= number_format($item['stock_current'], 0, ',', '.') ?> <?= htmlspecialchars($item['unit']) ?></span>
-                            </span>
-                            <div class="flex items-center space-x-1" onclick="event.stopPropagation()">
-                                <button onclick="quickStockAdjust(<?= $item['id'] ?>, -50, 'Pengurangan 50 <?= $item['unit'] ?>')" class="w-6 h-6 flex items-center justify-center rounded-lg bg-slate-100 hover:bg-rose-100 text-slate-600 hover:text-rose-700 font-bold text-xs transition-smooth" title="Kurang 50">-</button>
-                                <button onclick="quickStockAdjust(<?= $item['id'] ?>, 50, 'Penambahan 50 <?= $item['unit'] ?>')" class="w-6 h-6 flex items-center justify-center rounded-lg bg-slate-100 hover:bg-emerald-100 text-slate-600 hover:text-emerald-700 font-bold text-xs transition-smooth" title="Tambah 50">+</button>
+                        <!-- Spesifikasi Parameter Mutu Benih -->
+                        <div class="mt-2 py-1.5 px-2.5 bg-slate-50/80 rounded-xl border border-slate-100 flex items-center justify-between text-[11px] text-slate-600">
+                            <div>
+                                <span class="text-slate-400 block text-[9px] uppercase font-bold tracking-wider"><?= htmlspecialchars($item['spec_1_label'] ?: 'Kemurnian') ?></span>
+                                <span class="font-black text-slate-800"><?= htmlspecialchars($item['spec_1_value'] ?: '-') ?></span>
+                            </div>
+                            <div class="text-right">
+                                <span class="text-slate-400 block text-[9px] uppercase font-bold tracking-wider"><?= htmlspecialchars($item['spec_2_label'] ?: 'Daya Tumbuh') ?></span>
+                                <span class="font-black text-slate-800"><?= htmlspecialchars($item['spec_2_value'] ?: '-') ?></span>
+                            </div>
+                        </div>
+
+                        <!-- Stock Card Container with Integrated Stepper -->
+                        <div class="bg-slate-50/80 rounded-2xl p-2.5 border border-slate-100 flex items-center justify-between mt-2.5">
+                            <div>
+                                <span class="text-[9px] uppercase font-bold text-slate-400 block tracking-wider">Stok Gudang</span>
+                                <span id="card-stock-<?= $item['id'] ?>" class="font-black text-emerald-700 text-sm">
+                                    <?= number_format($item['stock_current'], 0, ',', '.') ?> <?= htmlspecialchars($item['unit']) ?>
+                                </span>
+                            </div>
+                            <div class="inline-flex items-center bg-white rounded-xl p-0.5 border border-slate-200 shadow-2xs" onclick="event.stopPropagation()">
+                                <button type="button" onclick="quickStockAdjust(<?= $item['id'] ?>, -50, 'Pengurangan 50 <?= $item['unit'] ?>')" class="w-6 h-6 flex items-center justify-center rounded-lg hover:bg-rose-50 text-slate-500 hover:text-rose-600 font-black text-xs transition-smooth" title="Kurang 50">-</button>
+                                <span class="w-px h-3 bg-slate-200"></span>
+                                <button type="button" onclick="quickStockAdjust(<?= $item['id'] ?>, 50, 'Penambahan 50 <?= $item['unit'] ?>')" class="w-6 h-6 flex items-center justify-center rounded-lg hover:bg-emerald-50 text-slate-500 hover:text-emerald-700 font-black text-xs transition-smooth" title="Tambah 50">+</button>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Card Bottom Action Link -->
-                    <div class="mt-4 pt-3 border-t border-slate-100 flex flex-col gap-2">
-                        <div class="flex items-center justify-between gap-1.5">
-                            <button type="button" onclick='openDistributeModal(<?= json_encode($item) ?>)' class="inline-flex items-center space-x-1.5 px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold shadow-xs transition-smooth" title="Distribusikan Benih & Tandai Lokasi">
-                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-                                </svg>
-                                <span>Distribusikan</span>
+                    <!-- Action Buttons Section -->
+                    <div class="mt-4 pt-3 border-t border-slate-100 space-y-2">
+                        <div class="grid grid-cols-2 gap-2">
+                            <button type="button" onclick='openDistributeModal(<?= json_encode($item) ?>)' class="inline-flex items-center justify-center space-x-1.5 py-2 px-3 text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 rounded-xl shadow-xs transition-smooth" title="Distribusikan Benih & Tandai Lokasi">
+                                <span>📦 Salurkan</span>
                             </button>
-                            <button type="button" onclick='openProductMapModal(<?= json_encode($item) ?>)' class="inline-flex items-center space-x-1 px-2.5 py-1.5 bg-slate-50 hover:bg-emerald-50 text-slate-600 hover:text-emerald-700 rounded-xl text-[11px] font-bold border border-slate-200 transition-smooth" title="Lihat Titik Sebaran di Minimap">
-                                <span>📍 Minimap</span>
+                            <button type="button" onclick='openProductMapModal(<?= json_encode($item) ?>)' class="inline-flex items-center justify-center space-x-1.5 py-2 px-2.5 text-xs font-bold text-slate-700 hover:text-emerald-800 bg-slate-50 hover:bg-emerald-50 rounded-xl border border-slate-200 hover:border-emerald-300 transition-smooth" title="Lihat Titik Sebaran di Minimap">
+                                <span>📍 Peta Sebaran</span>
                             </button>
                         </div>
-                        <div onclick='openDetailModal(<?= json_encode($item) ?>)' class="flex items-center justify-between text-xs font-bold text-emerald-700 hover:text-emerald-800 cursor-pointer pt-1 group/link">
+                        <button type="button" onclick='openDetailModal(<?= json_encode($item) ?>)' class="w-full inline-flex items-center justify-center space-x-1 text-xs font-bold text-slate-500 hover:text-emerald-700 py-1 transition-smooth cursor-pointer group/link">
                             <span>Lihat Detail Varietas</span>
                             <svg class="w-3.5 h-3.5 transition-transform duration-200 group-hover/link:translate-x-1 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                             </svg>
-                        </div>
+                        </button>
                     </div>
                 </div>
                 <?php endforeach; ?>
