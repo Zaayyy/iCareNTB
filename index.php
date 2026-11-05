@@ -37,9 +37,6 @@ foreach ($pakanList as $item) {
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Custom CSS -->
     <link rel="stylesheet" href="assets/css/custom.css">
-    <!-- Leaflet Minimalist Map -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
     <script>
         tailwind.config = {
             theme: {
@@ -258,18 +255,13 @@ foreach ($pakanList as $item) {
                     </div>
 
                     <!-- Card Bottom Action Link (Read-Only Publik) -->
-                    <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between gap-2">
+                    <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between">
                         <!-- Tautan Detail Spesifikasi -->
-                        <button type="button" onclick='openDetailModalPublic(<?= json_encode($item) ?>)' class="inline-flex items-center space-x-1 text-xs font-bold text-emerald-700 hover:text-emerald-800 transition-smooth cursor-pointer group/link">
-                            <span>Detail Spesifikasi</span>
+                        <button type="button" onclick='openDetailModalPublic(<?= json_encode($item) ?>)' class="w-full inline-flex items-center justify-center space-x-1.5 py-2 px-3 text-xs font-bold text-emerald-700 bg-emerald-50/80 hover:bg-emerald-100/80 rounded-xl transition-smooth cursor-pointer group/link">
+                            <span>Detail Spesifikasi & Nutrisi</span>
                             <svg class="w-3.5 h-3.5 transition-transform duration-200 group-hover/link:translate-x-1 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                             </svg>
-                        </button>
-
-                        <!-- Tautan Peta Sebaran Produk -->
-                        <button type="button" onclick='openProductMapPublic(<?= json_encode($item) ?>)' class="inline-flex items-center space-x-1 px-2.5 py-1.5 bg-slate-50 hover:bg-emerald-50 text-slate-600 hover:text-emerald-700 rounded-xl text-[11px] font-bold border border-slate-200 transition-smooth" title="Lihat Titik Sebaran Pakan di Peta DIY">
-                            <span>📍 Peta</span>
                         </button>
                     </div>
                 </div>
@@ -281,59 +273,6 @@ foreach ($pakanList as $item) {
                 <div class="w-12 h-12 rounded-2xl bg-slate-100 text-slate-400 flex items-center justify-center mx-auto mb-2 text-xl font-bold">🔍</div>
                 <h3 class="text-base font-bold text-slate-800">Tidak ada varian pakan jadi yang cocok</h3>
                 <p class="text-xs text-slate-500 mt-1">Coba sesuaikan kata kunci pencarian atau pilih kategori pakan lain di atas.</p>
-            </div>
-        </section>
-
-        <!-- ======================================================== -->
-        <!-- SECTION: MINIMAP SEBARAN DISTRIBUSI PAKAN JADI -->
-        <!-- ======================================================== -->
-        <section class="bg-white rounded-3xl p-6 border border-slate-100 shadow-[0_4px_25px_rgba(0,0,0,0.03)] space-y-4">
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-3 border-b border-slate-100 gap-3">
-                <div class="flex items-center space-x-3">
-                    <div class="w-10 h-10 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center border border-emerald-100/80 shrink-0">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"></path>
-                        </svg>
-                    </div>
-                    <div>
-                        <div class="flex items-center space-x-2">
-                            <h3 class="text-base font-extrabold text-slate-800">Peta Sebaran Distribusi Pakan Jadi BRMP DIY</h3>
-                            <span class="text-[10px] uppercase font-bold tracking-wider bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full">D.I. Yogyakarta</span>
-                        </div>
-                        <p class="text-xs text-slate-500 mt-0.5">Pantau titik lokasi penyaluran produk pakan jadi ke kelompok peternak dan pembudidaya binaan di wilayah DIY</p>
-                    </div>
-                </div>
-
-                <div class="flex items-center space-x-2">
-                    <span id="badge-total-titik-public" class="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-100">
-                        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping inline-block"></span>
-                        <span id="label-count-titik-public">Memuat Titik...</span>
-                    </span>
-                    <button onclick="resetPublicMapView()" class="px-3 py-1 text-xs font-semibold text-slate-600 hover:text-emerald-700 bg-slate-50 hover:bg-slate-100 rounded-full border border-slate-200 transition-smooth">
-                        Reset Posisi
-                    </button>
-                </div>
-            </div>
-
-            <!-- Grid Peta Leaflet & Daftar Titik Lokasi -->
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
-                <div class="lg:col-span-2 relative">
-                    <div id="public-distribution-map" class="w-full h-[320px] sm:h-[360px] rounded-2xl overflow-hidden border border-slate-200 z-10 shadow-inner"></div>
-                    <div class="absolute bottom-3 left-3 z-[400] bg-white/95 backdrop-blur-xs px-3 py-1.5 rounded-xl border border-slate-200 text-[11px] text-slate-600 shadow-sm flex items-center space-x-2">
-                        <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block"></span>
-                        <span class="font-medium">Peta Sebaran Publik &bull; Klik pin untuk melihat nama kelompok & volume</span>
-                    </div>
-                </div>
-
-                <div class="flex flex-col h-[320px] sm:h-[360px]">
-                    <div class="text-xs font-bold text-slate-700 mb-2 flex items-center justify-between">
-                        <span>Penyaluran Terakhir</span>
-                        <span class="text-[10px] text-slate-400 font-normal">Klik untuk zoom lokasi</span>
-                    </div>
-                    <div id="public-points-list" class="overflow-y-auto space-y-2 pr-1 flex-1 custom-scroll">
-                        <div class="text-xs text-slate-400 py-8 text-center">Memuat daftar lokasi...</div>
-                    </div>
-                </div>
             </div>
         </section>
 
@@ -423,64 +362,10 @@ foreach ($pakanList as $item) {
                 <div class="pt-1.5 text-[11px] text-slate-500 leading-relaxed" id="pub-detail-desc">-</div>
             </div>
 
-            <div class="pt-3 border-t border-slate-100 flex items-center justify-between">
-                <button type="button" id="pub-btn-map" onclick="triggerPublicMapFromDetail()" class="inline-flex items-center space-x-1.5 px-4 py-2 text-xs font-bold text-emerald-800 bg-emerald-50 hover:bg-emerald-100 rounded-xl transition-smooth border border-emerald-200/60">
-                    <span>📍 Lihat Sebaran di Peta</span>
-                </button>
-                <button type="button" onclick="closeModal('modal-detail-public')" class="px-5 py-2 text-xs font-bold text-white bg-slate-800 hover:bg-slate-700 rounded-xl transition-smooth">
+            <div class="pt-3 border-t border-slate-100 flex items-center justify-end">
+                <button type="button" onclick="closeModal('modal-detail-public')" class="px-6 py-2.5 text-xs font-bold text-white bg-slate-800 hover:bg-slate-700 rounded-xl transition-smooth shadow-xs">
                     Tutup
                 </button>
-            </div>
-        </div>
-    </dialog>
-
-    <!-- Modal Peta Khusus Produk (Read-Only Publik) -->
-    <dialog id="modal-product-map-public" class="w-full max-w-4xl bg-white p-6 rounded-3xl shadow-2xl">
-        <div class="flex items-center justify-between pb-4 border-b border-slate-100">
-            <div class="flex items-center space-x-3.5">
-                <div class="w-12 h-12 rounded-2xl bg-emerald-50 p-1 border border-emerald-100 flex items-center justify-center overflow-hidden shrink-0">
-                    <img id="pub-pmap-img" src="" alt="Foto Produk" class="max-h-full max-w-full object-contain rounded-xl">
-                </div>
-                <div>
-                    <span id="pub-pmap-code" class="text-xs font-mono font-bold text-emerald-700 bg-emerald-100/70 px-2 py-0.5 rounded-md">CODE</span>
-                    <h3 id="pub-pmap-title" class="text-lg font-black text-slate-800 leading-tight mt-0.5">Peta Distribusi Pakan</h3>
-                </div>
-            </div>
-            <button onclick="closeModal('modal-product-map-public')" class="p-1.5 text-slate-400 hover:text-slate-700 rounded-xl hover:bg-slate-100 transition-smooth">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                </svg>
-            </button>
-        </div>
-
-        <div class="space-y-4 mt-4">
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div class="p-3 bg-emerald-50/70 rounded-2xl border border-emerald-100/80">
-                    <span class="text-[11px] font-bold text-emerald-800 block">Total Volume Tersalurkan</span>
-                    <span id="pub-pmap-stat-volume" class="text-lg font-black text-emerald-700">0 Unit</span>
-                </div>
-                <div class="p-3 bg-slate-50 rounded-2xl border border-slate-100">
-                    <span class="text-[11px] font-bold text-slate-500 block">Jumlah Titik Penyaluran di DIY</span>
-                    <span id="pub-pmap-stat-points" class="text-lg font-black text-slate-800">0 Titik Lokasi</span>
-                </div>
-            </div>
-
-            <div id="pub-pmap-content-grid" class="grid grid-cols-1 lg:grid-cols-3 gap-4">
-                <div class="lg:col-span-2 relative">
-                    <div id="public-product-specific-map" class="w-full h-[320px] sm:h-[350px] rounded-2xl overflow-hidden border border-slate-200 z-10 shadow-inner"></div>
-                </div>
-                <div class="flex flex-col h-[320px] sm:h-[350px]">
-                    <div class="text-xs font-bold text-slate-700 mb-2">Titik Penyaluran:</div>
-                    <div id="pub-pmap-points-list" class="overflow-y-auto space-y-2 pr-1 flex-1 custom-scroll">
-                        <div class="text-xs text-slate-400 py-8 text-center">Memuat lokasi...</div>
-                    </div>
-                </div>
-            </div>
-
-            <div id="pub-pmap-empty" class="hidden text-center py-8 bg-slate-50 rounded-2xl border border-slate-200/80">
-                <div class="text-2xl mb-1">📍</div>
-                <h4 class="text-sm font-bold text-slate-700">Belum Ada Titik Penyaluran Tercatat</h4>
-                <p class="text-xs text-slate-500 mt-0.5">Produk pakan ini belum memiliki riwayat sebaran distribusi di wilayah DIY.</p>
             </div>
         </div>
     </dialog>

@@ -637,10 +637,9 @@ function initDistributionMinimap() {
         scrollWheelZoom: false
     });
 
-    // Minimalist CartoDB Positron Tile Layer (Ultra clean & minimalis)
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
-        subdomains: 'abcd',
+    // OpenStreetMap Standard Tile Layer (Gratis, jernih & tanpa API Key)
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
         maxZoom: 19
     }).addTo(distributionMap);
 
@@ -697,7 +696,7 @@ function renderMinimapMarkers(locations) {
                 </div>
                 <h4 class="font-bold text-slate-900 text-sm leading-snug mb-1">${escapeHtml(loc.item_name)}</h4>
                 <div class="bg-emerald-50 text-emerald-800 px-2.5 py-1 rounded-lg font-bold text-xs inline-block mb-2 border border-emerald-100">
-                    Penyaluran: ${Number(loc.quantity).toLocaleString('id-ID')} ${escapeHtml(loc.unit)}
+                    Penyaluran: ${(parseFloat(loc.quantity) || 0).toLocaleString('id-ID')} ${escapeHtml(loc.unit || 'unit')}
                 </div>
                 <div class="space-y-1 text-slate-600 text-[11px] border-t border-slate-100 pt-2">
                     <div><span class="text-slate-400">Penerima:</span> <strong class="text-slate-800">${escapeHtml(loc.destination_or_source)}</strong></div>
@@ -747,7 +746,7 @@ function renderDistributionList(locations) {
                     </div>
                     <div class="text-[11px] text-slate-500 mt-0.5">
                         <span class="font-semibold text-emerald-700">${escapeHtml(loc.item_name)}</span> &bull; 
-                        <span class="font-bold text-slate-700">${Number(loc.quantity).toLocaleString('id-ID')} ${escapeHtml(loc.unit)}</span>
+                        <span class="font-bold text-slate-700">${(parseFloat(loc.quantity) || 0).toLocaleString('id-ID')} ${escapeHtml(loc.unit || 'unit')}</span>
                     </div>
                     <div class="text-[10px] text-slate-400 mt-0.5">
                         ${loc.mutation_date} &bull; ${escapeHtml(loc.destination_or_source)}
@@ -908,9 +907,8 @@ async function openProductMapModal(item) {
             scrollWheelZoom: false
         });
 
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
-            subdomains: 'abcd',
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
             maxZoom: 19
         }).addTo(singleProductMap);
     }
@@ -997,7 +995,7 @@ function renderSingleProductMap(item, locations) {
                 </div>
                 <h4 class="font-bold text-slate-900 text-sm leading-snug mb-1">${escapeHtml(loc.item_name)}</h4>
                 <div class="bg-emerald-50 text-emerald-800 px-2.5 py-1 rounded-lg font-bold text-xs inline-block mb-2 border border-emerald-100">
-                    Penyaluran: ${Number(loc.quantity).toLocaleString('id-ID')} ${escapeHtml(loc.unit)}
+                    Penyaluran: ${(parseFloat(loc.quantity) || 0).toLocaleString('id-ID')} ${escapeHtml(loc.unit || 'unit')}
                 </div>
                 <div class="space-y-1 text-slate-600 text-[11px] border-t border-slate-100 pt-2">
                     <div><span class="text-slate-400">Penerima:</span> <strong class="text-slate-800">${escapeHtml(loc.destination_or_source)}</strong></div>
@@ -1018,7 +1016,7 @@ function renderSingleProductMap(item, locations) {
                         ${escapeHtml(loc.location_name || loc.destination_or_source)}
                     </div>
                     <div class="text-[11px] text-emerald-700 font-bold mt-0.5">
-                        ${Number(loc.quantity).toLocaleString('id-ID')} ${escapeHtml(loc.unit)}
+                        ${(parseFloat(loc.quantity) || 0).toLocaleString('id-ID')} ${escapeHtml(loc.unit || 'unit')}
                     </div>
                     <div class="text-[10px] text-slate-400 mt-0.5">
                         ${loc.mutation_date} &bull; ${escapeHtml(loc.destination_or_source)}
@@ -1131,9 +1129,8 @@ function initDistPickerMap() {
             scrollWheelZoom: false
         });
 
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-            attribution: '&copy; OpenStreetMap &copy; CARTO',
-            subdomains: 'abcd',
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
             maxZoom: 19
         }).addTo(distPickerMap);
 
@@ -1238,9 +1235,8 @@ async function showDistributionResultMap(data, item) {
             scrollWheelZoom: false
         });
 
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-            attribution: '&copy; OpenStreetMap &copy; CARTO',
-            subdomains: 'abcd',
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
             maxZoom: 19
         }).addTo(resultMinimap);
     } else {
@@ -1311,7 +1307,7 @@ async function showDistributionResultMap(data, item) {
                         m.bindPopup(`
                             <div class="p-2.5 text-xs">
                                 <div class="font-bold text-slate-800">${escapeHtml(prevLoc.item_name)}</div>
-                                <div class="text-emerald-700 font-semibold">${Number(prevLoc.quantity).toLocaleString('id-ID')} ${escapeHtml(prevLoc.unit)}</div>
+                                <div class="text-emerald-700 font-semibold">${(parseFloat(prevLoc.quantity) || 0).toLocaleString('id-ID')} ${escapeHtml(prevLoc.unit || 'unit')}</div>
                                 <div class="text-slate-500 text-[11px]">${escapeHtml(prevLoc.destination_or_source)} &bull; ${prevLoc.mutation_date}</div>
                             </div>
                         `);

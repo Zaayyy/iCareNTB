@@ -54,3 +54,4 @@ function require_admin_login(): void {
         exit;
     }
 }
+
