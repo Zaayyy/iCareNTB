@@ -128,22 +128,17 @@ foreach ($pakanList as $item) {
                     </p>
                 </div>
 
-                <!-- 3 Quick Metrics Cards -->
-                <div class="grid grid-cols-3 gap-2.5 sm:gap-3.5 shrink-0">
-                    <div class="bg-white/90 backdrop-blur-md p-3 sm:p-4 rounded-2xl border border-slate-200/80 shadow-2xs text-center">
+                <!-- 2 Quick Metrics Cards -->
+                <div class="grid grid-cols-2 gap-2.5 sm:gap-3.5 shrink-0">
+                    <div class="bg-white/90 backdrop-blur-md p-3 sm:p-4 rounded-2xl border border-slate-200/80 shadow-2xs text-center min-w-[120px] sm:min-w-[140px]">
                         <span class="text-[11px] font-bold text-slate-400 block uppercase">Varian Pakan</span>
                         <span class="text-xl sm:text-2xl font-black text-slate-900 block mt-0.5"><?= $totalVarian ?></span>
                         <span class="text-[10px] text-emerald-700 font-bold block mt-0.5">Formulasi Siap Pakai</span>
                     </div>
-                    <div class="bg-white/90 backdrop-blur-md p-3 sm:p-4 rounded-2xl border border-slate-200/80 shadow-2xs text-center">
+                    <div class="bg-white/90 backdrop-blur-md p-3 sm:p-4 rounded-2xl border border-slate-200/80 shadow-2xs text-center min-w-[120px] sm:min-w-[140px]">
                         <span class="text-[11px] font-bold text-slate-400 block uppercase">Total Stok</span>
                         <span class="text-xl sm:text-2xl font-black text-[#059669] block mt-0.5"><?= number_format($totalStokKg, 0, ',', '.') ?></span>
                         <span class="text-[10px] text-slate-500 font-medium block mt-0.5">Kilogram Tersedia</span>
-                    </div>
-                    <div class="bg-white/90 backdrop-blur-md p-3 sm:p-4 rounded-2xl border border-slate-200/80 shadow-2xs text-center">
-                        <span class="text-[11px] font-bold text-slate-400 block uppercase">Status Mutu</span>
-                        <span class="text-xl sm:text-2xl font-black text-amber-500 block mt-0.5">SNI</span>
-                        <span class="text-[10px] text-amber-700 font-bold block mt-0.5">Terstandarisasi</span>
                     </div>
                 </div>
             </div>
