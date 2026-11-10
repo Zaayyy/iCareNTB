@@ -1428,4 +1428,107 @@ async function quickStockAdjust(itemId, delta, reason) {
     }
 }
 
+// Google Sheets Integration Handlers
+async function saveGsheetUrl(e) {
+    e.preventDefault();
+    const btn = document.getElementById('btn-save-gsheet');
+    const input = document.getElementById('input-gsheet-url');
+    const url = input.value.trim();
+
+    if (!url) {
+        showToast('Masukkan URL Web App Google Apps Script!', 'error');
+        return;
+    }
+
+    const origText = btn.innerHTML;
+    btn.innerHTML = 'Menyimpan & Tes Koneksi...';
+    btn.disabled = true;
+
+    try {
+        const formData = new FormData();
+        formData.append('action', 'save_gsheet_url');
+        formData.append('url', url);
+
+        const res = await fetch('api.php', { method: 'POST', body: formData });
+        const data = await res.json();
+
+        if (data.success) {
+            showToast(data.message);
+            const statusBox = document.getElementById('gsheet-status-box');
+            const statusText = document.getElementById('gsheet-status-text');
+            if (statusBox && statusText) {
+                statusBox.className = 'p-3.5 rounded-2xl border bg-emerald-50 border-emerald-200 flex items-center justify-between';
+                statusText.className = 'text-xs font-bold text-emerald-900';
+                statusText.textContent = 'Terhubung ke Google Apps Script';
+            }
+        } else {
+            showToast(data.message, 'error');
+        }
+    } catch (err) {
+        showToast('Koneksi ke server gagal.', 'error');
+    } finally {
+        btn.innerHTML = origText;
+        btn.disabled = false;
+    }
+}
+
+async function syncGsheetNow() {
+    const btn = document.getElementById('btn-sync-gsheet');
+    const origText = btn.innerHTML;
+    btn.innerHTML = '<span>⏳</span><span>Sedang Mengirim ke Google Sheet...</span>';
+    btn.disabled = true;
+
+    try {
+        const formData = new FormData();
+        formData.append('action', 'sync_gsheet');
+
+        const res = await fetch('api.php', { method: 'POST', body: formData });
+        const data = await res.json();
+
+        if (data.success) {
+            showToast(data.message || 'Sinkronisasi ke Google Spreadsheet berhasil!');
+        } else {
+            showToast(data.message || 'Gagal sinkronisasi ke Google Sheet.', 'error');
+        }
+    } catch (err) {
+        showToast('Terjadi kesalahan saat sinkronisasi.', 'error');
+    } finally {
+        btn.innerHTML = origText;
+        btn.disabled = false;
+    }
+}
+
+async function pullGsheetNow() {
+    if (!confirm('Apakah Anda yakin ingin menarik data dari Google Spreadsheet? Data lokal akan diperbarui mengikuti data di Google Spreadsheet.')) {
+        return;
+    }
+
+    const btn = document.getElementById('btn-pull-gsheet');
+    const origText = btn.innerHTML;
+    btn.innerHTML = '<span>⏳</span><span>Menarik Data dari Sheet...</span>';
+    btn.disabled = true;
+
+    try {
+        const formData = new FormData();
+        formData.append('action', 'pull_gsheet');
+
+        const res = await fetch('api.php', { method: 'POST', body: formData });
+        const data = await res.json();
+
+        if (data.success) {
+            showToast(data.message || 'Data berhasil dimuat dari Google Sheet!');
+            setTimeout(() => {
+                location.reload();
+            }, 1200);
+        } else {
+            showToast(data.message || 'Gagal menarik data dari Google Sheet.', 'error');
+        }
+    } catch (err) {
+        showToast('Terjadi kesalahan saat menarik data.', 'error');
+    } finally {
+        btn.innerHTML = origText;
+        btn.disabled = false;
+    }
+}
+
 

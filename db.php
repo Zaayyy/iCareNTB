@@ -1,10 +1,31 @@
 <?php
 // db.php - Database connection & auto initialization for Rumah Produksi BRMP DIY
-$dataDir = __DIR__ . '/data';
-if (!is_dir($dataDir)) {
-    @mkdir($dataDir, 0777, true);
+
+// Deteksi lingkungan serverless Vercel (read-only filesystem)
+$isVercel = isset($_ENV['VERCEL']) || getenv('VERCEL') || (isset($_SERVER['VERCEL']) && $_SERVER['VERCEL']);
+
+if ($isVercel) {
+    // Pada Vercel, hanya direktori /tmp yang memiliki hak tulis (writable)
+    $dataDir = sys_get_temp_dir() . '/brmp_data';
+    if (!is_dir($dataDir)) {
+        @mkdir($dataDir, 0777, true);
+    }
+    $dbFile = $dataDir . '/pakan.db';
+
+    // Salin database awal jika belum ada di /tmp
+    if (!file_exists($dbFile)) {
+        $sourceDb = __DIR__ . '/data/pakan.db';
+        if (file_exists($sourceDb)) {
+            @copy($sourceDb, $dbFile);
+        }
+    }
+} else {
+    $dataDir = __DIR__ . '/data';
+    if (!is_dir($dataDir)) {
+        @mkdir($dataDir, 0777, true);
+    }
+    $dbFile = $dataDir . '/pakan.db';
 }
-$dbFile = $dataDir . '/pakan.db';
 
 try {
     $pdo = new PDO("sqlite:" . $dbFile);

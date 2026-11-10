@@ -2,7 +2,12 @@
 // auth.php - Helper Autentikasi Admin Rumah Produksi BRMP DIY
 
 if (session_status() === PHP_SESSION_NONE) {
-    session_start();
+    // Pada lingkungan serverless Vercel, pastikan path session tersimpan di /tmp
+    $tmpDir = sys_get_temp_dir();
+    if (!empty($tmpDir) && is_writable($tmpDir)) {
+        @session_save_path($tmpDir);
+    }
+    @session_start();
 }
 
 // Kredensial Admin Default (Dapat disesuaikan)

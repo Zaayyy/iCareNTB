@@ -3,13 +3,14 @@
 header('Content-Type: application/json');
 require_once __DIR__ . '/db.php';
 require_once __DIR__ . '/auth.php';
+require_once __DIR__ . '/google_sheets.php';
 
 $action = $_GET['action'] ?? $_POST['action'] ?? '';
 
 // Proteksi hak akses CRUD khusus admin
 $mutationActions = [
     'add_item', 'update_item', 'delete_item', 'quick_adjust', 
-    'add_mutation', 'distribute_item'
+    'add_mutation', 'distribute_item', 'save_gsheet_url', 'sync_gsheet', 'pull_gsheet'
 ];
 
 if (in_array($action, $mutationActions, true)) {
@@ -500,6 +501,46 @@ try {
                 'bahan_baku' => $statsBahanBaku,
                 'produk' => $statsProduk
             ]);
+            break;
+
+        case 'get_gsheet_info':
+            $url = get_gsheet_url();
+            echo json_encode([
+                'success' => true,
+                'is_connected' => !empty($url),
+                'url' => $url
+            ]);
+            break;
+
+        case 'save_gsheet_url':
+            $newUrl = trim($_POST['url'] ?? '');
+            if (empty($newUrl)) {
+                echo json_encode(['success' => false, 'message' => 'URL Google Apps Script tidak boleh kosong!']);
+                exit;
+            }
+            if (!filter_var($newUrl, FILTER_VALIDATE_URL) || strpos($newUrl, 'script.google.com') === false) {
+                echo json_encode(['success' => false, 'message' => 'URL tidak valid! Pastikan berawalan https://script.google.com/macros/s/...']);
+                exit;
+            }
+            save_gsheet_url($newUrl);
+            
+            // Lakukan tes ping koneksi
+            $testRes = send_gsheet_request('GET', ['action' => 'test']);
+            echo json_encode([
+                'success' => true,
+                'message' => 'URL Google Spreadsheet berhasil disimpan!',
+                'test_result' => $testRes
+            ]);
+            break;
+
+        case 'sync_gsheet':
+            $res = sync_all_to_google_sheet($pdo);
+            echo json_encode($res);
+            break;
+
+        case 'pull_gsheet':
+            $res = pull_from_google_sheet($pdo);
+            echo json_encode($res);
             break;
 
         default:

@@ -2,9 +2,13 @@
 // admin.php - Panel Dashboard Manajemen Khusus Administrator BRMP DIY
 require_once __DIR__ . '/db.php';
 require_once __DIR__ . '/auth.php';
+require_once __DIR__ . '/google_sheets.php';
 
 // Pastikan hanya admin yang bisa mengakses
 require_admin_login();
+
+$gsheetUrl = get_gsheet_url();
+$isGsheetConnected = !empty($gsheetUrl);
 
 // Fetch items for each feature
 $bahanBakuList = $pdo->query("SELECT * FROM inventory_items WHERE type = 'bahan_baku' ORDER BY id ASC")->fetchAll();
@@ -110,6 +114,18 @@ $metricsPRD = getMetrics($produkList);
 
                 <!-- Admin Action Buttons -->
                 <div class="flex items-center space-x-2 sm:space-x-2.5">
+                    <!-- Google Sheets Sync Button -->
+                    <button onclick="openModal('modal-gsheet')" class="inline-flex items-center space-x-1.5 px-3 py-2 text-xs sm:text-sm font-bold <?= $isGsheetConnected ? 'text-emerald-950 bg-amber-300 hover:bg-amber-400' : 'text-emerald-100 bg-white/10 hover:bg-white/20 border border-white/20' ?> rounded-full shadow-md transition-smooth" title="Integrasi Google Spreadsheet">
+                        <svg class="w-4 h-4 <?= $isGsheetConnected ? 'text-emerald-950' : 'text-emerald-200' ?>" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zM7 10h10v2H7zm0-3h10v2H7zm0 6h7v2H7z"/>
+                        </svg>
+                        <span class="hidden sm:inline">Google Sheets</span>
+                        <span class="sm:hidden">Sheets</span>
+                        <?php if ($isGsheetConnected): ?>
+                        <span class="w-2 h-2 rounded-full bg-emerald-700 animate-ping inline-block"></span>
+                        <?php endif; ?>
+                    </button>
+
                     <!-- Catat Mutasi Manual -->
                     <button onclick="openModal('modal-mutation')" class="inline-flex items-center space-x-1.5 px-3.5 py-2 text-xs sm:text-sm font-bold text-emerald-900 bg-white hover:bg-emerald-50 rounded-full shadow-md transition-smooth">
                         <svg class="w-4 h-4 text-emerald-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1188,6 +1204,87 @@ $metricsPRD = getMetrics($produkList);
                 </button>
             </div>
         </form>
+    </dialog>
+
+    <!-- Modal 10: Integrasi Google Spreadsheet & Vercel Sync -->
+    <dialog id="modal-gsheet" class="w-full max-w-xl bg-white p-6 rounded-3xl shadow-2xl backdrop:bg-slate-900/60">
+        <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+            <div class="flex items-center space-x-2.5">
+                <div class="w-9 h-9 rounded-xl bg-emerald-100 text-emerald-800 flex items-center justify-center font-bold">
+                    📊
+                </div>
+                <div>
+                    <h3 class="text-base sm:text-lg font-black text-slate-900">Integrasi Google Spreadsheet</h3>
+                    <p class="text-xs text-slate-500 font-medium">Sinkronisasi permanen cloud (Vercel & Render ready)</p>
+                </div>
+            </div>
+            <button onclick="closeModal('modal-gsheet')" class="p-1 text-slate-400 hover:text-slate-700 rounded-lg">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+        </div>
+
+        <div class="space-y-4 mt-4">
+            <!-- Status Badge -->
+            <div id="gsheet-status-box" class="p-3.5 rounded-2xl border <?= $isGsheetConnected ? 'bg-emerald-50 border-emerald-200' : 'bg-amber-50 border-amber-200' ?> flex items-center justify-between">
+                <div class="flex items-center space-x-2">
+                    <span class="w-3 h-3 rounded-full <?= $isGsheetConnected ? 'bg-emerald-500 animate-pulse' : 'bg-amber-500' ?>"></span>
+                    <span id="gsheet-status-text" class="text-xs font-bold <?= $isGsheetConnected ? 'text-emerald-900' : 'text-amber-900' ?>">
+                        <?= $isGsheetConnected ? 'Terhubung ke Google Apps Script' : 'Belum Terhubung: Masukkan Web App URL di bawah' ?>
+                    </span>
+                </div>
+                <span class="text-[11px] font-semibold text-slate-500">Google Drive API</span>
+            </div>
+
+            <!-- Form Simpan URL -->
+            <form id="form-gsheet-url" onsubmit="saveGsheetUrl(event)" class="space-y-3">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">
+                        URL Web App Google Apps Script *
+                    </label>
+                    <input type="url" id="input-gsheet-url" required value="<?= htmlspecialchars($gsheetUrl) ?>" placeholder="https://script.google.com/macros/s/.../exec" class="w-full px-3 py-2 text-xs font-mono border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500">
+                    <p class="text-[11px] text-slate-500 mt-1">
+                        Didapat dari menu <em>Extensions > Apps Script > Deploy as Web App</em> pada file Google Spreadsheet Anda.
+                    </p>
+                </div>
+
+                <div class="flex items-center justify-end space-x-2">
+                    <button type="submit" id="btn-save-gsheet" class="px-4 py-2 text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-500 rounded-xl shadow transition-smooth">
+                        💾 Simpan & Tes Koneksi
+                    </button>
+                </div>
+            </form>
+
+            <!-- Aksi Sinkronisasi Manual -->
+            <div class="pt-3 border-t border-slate-100">
+                <span class="block text-xs font-bold text-slate-700 mb-2">Aksi Sinkronisasi Database:</span>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                    <button type="button" onclick="syncGsheetNow()" id="btn-sync-gsheet" class="flex items-center justify-center space-x-2 px-3.5 py-2.5 text-xs font-bold text-emerald-900 bg-emerald-100 hover:bg-emerald-200 rounded-xl transition-smooth">
+                        <span>⚡</span>
+                        <span>Kirim Data ke Google Sheet</span>
+                    </button>
+                    <button type="button" onclick="pullGsheetNow()" id="btn-pull-gsheet" class="flex items-center justify-center space-x-2 px-3.5 py-2.5 text-xs font-bold text-slate-800 bg-slate-100 hover:bg-slate-200 rounded-xl transition-smooth">
+                        <span>📥</span>
+                        <span>Tarik Data dari Sheet ke Web</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Panduan Singkat 4 Langkah -->
+            <div class="bg-slate-50 p-3.5 rounded-2xl border border-slate-200/80 text-[11px] text-slate-600 space-y-1.5">
+                <p class="font-bold text-slate-800 text-xs flex items-center space-x-1.5">
+                    <span>💡</span>
+                    <span>Cara Pasang Google Sheet (Cuma 2 Menit):</span>
+                </p>
+                <ol class="list-decimal list-inside space-y-1 pl-1">
+                    <li>Buat file baru di Google Spreadsheet (beri nama misal: <em>Database BRMP DIY</em>).</li>
+                    <li>Buka menu <strong>Extensions (Ekstensi) &gt; Apps Script</strong>.</li>
+                    <li>Copy seluruh isi file <code class="bg-white px-1 py-0.5 rounded border border-slate-200 font-mono text-emerald-700">google-apps-script.js</code> lalu paste di Apps Script.</li>
+                    <li>Klik <strong>Deploy &gt; New deployment &gt; Web app</strong> (pilih Who has access: <em>Anyone</em>), lalu salin URL-nya ke form di atas!</li>
+                </ol>
+            </div>
+        </div>
     </dialog>
 
     <!-- Toast Notification -->
